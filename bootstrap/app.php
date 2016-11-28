@@ -42,6 +42,21 @@ $app->singleton(
 );
 
 /*
+ |--------------------------------------------------------------------------
+ | Configure Logging
+ |--------------------------------------------------------------------------
+ |
+ | Here we set up separate log files for command line processing and web access,
+ | as each are done by different users, which causes permission issues
+ |
+ */
+$app->configureMonologUsing(function (Monolog\Logger $monolog) {
+    $filename = storage_path('logs/laravel-'.php_sapi_name().'.log');
+    $handler = new Monolog\Handler\RotatingFileHandler($filename);
+    $monolog->pushHandler($handler);
+});
+
+/*
 |--------------------------------------------------------------------------
 | Return The Application
 |--------------------------------------------------------------------------
