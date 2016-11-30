@@ -21,6 +21,13 @@ interface GridsContract
     );
 
     /**
+     * Check the options given to the class can be handled
+     * 
+     * @return boolean
+     */
+    public function isValid();
+
+    /**
      * Get a count of how many servers are needed for the given number of drivers
      * @param int $driverCount
      * @return int
