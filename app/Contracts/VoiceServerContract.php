@@ -8,6 +8,14 @@ namespace App\Contracts;
 interface VoiceServerContract
 {
     /**
+     * Set up the server we are using. Details is an array to allow
+     * whatever required parameters to be passed.
+     * @param array $details
+     * @return bool
+     */
+    public function setServer(array $details);
+
+    /**
      * Create a new group of users
      * @param string $name
      * @param array $users
