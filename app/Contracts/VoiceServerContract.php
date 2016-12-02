@@ -19,31 +19,31 @@ interface VoiceServerContract
      * Create a new group of users
      * @param string $name
      * @param array $users
-     * @return int|false
+     * @return string|false
      */
     public function createGroup(string $name, array $users);
 
     /**
      * Delete a group
-     * @param int $groupID
+     * @param string $groupID
      * @return bool
      */
-    public function destroyGroup(int $groupID);
+    public function destroyGroup(string $groupID);
 
     /**
      * Create a voice channel for the given groups
      * @param string $name
-     * @param int[] $groupIDs
-     * @return int|false
+     * @param string[] $groupIDs
+     * @return string|false
      */
     public function createVoiceChannel(string $name, array $groupIDs);
 
     /**
      * Delete a voice channel
-     * @param int $channelID
+     * @param string $channelID
      * @return bool
      */
-    public function destroyVoiceChannel(int $channelID);
+    public function destroyVoiceChannel(string $channelID);
 
     /**
      * Post an announcement
