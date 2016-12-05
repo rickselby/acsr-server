@@ -9,9 +9,10 @@ interface ServerManagerContract
 {
     /**
      * Create a new Assetto Corsa server; return an identifier
+     * @param int $eventID ID of the event we're creating a server for
      * @return int|false
      */
-    public function create();
+    public function create(int $eventID);
 
     /**
      * Set the config file for the given server
