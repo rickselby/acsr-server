@@ -5,18 +5,11 @@ namespace App\Contracts;
 interface ConfigFileContract
 {
     /**
-     * Set default config values
-     * @param array $options
-     * @return bool
-     */
-    public function setServerConfig(array $options);
-
-    /**
-     * Get the server config with the given options
+     * Update the server config with the given options
      * @param array $options
      * @return string
      */
-    public function getServerConfig(array $options);
+    public function alterServerConfig($config, array $options);
 
     /**
      * Get an entry list for the given drivers
