@@ -4,9 +4,49 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "0dcc707a74c2eb6d1935f565282eb409",
-    "content-hash": "4f5b924a3a29befba0396c6cccc40de3",
+    "hash": "a97bfa23f9da480c177592f29eb159a8",
+    "content-hash": "38bfb7e890e23a6aba96e99f01447a5a",
     "packages": [
+        {
+            "name": "arodygin/linode-api-php",
+            "version": "1.1.9",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/arodygin/php-linode-api3.git",
+                "reference": "22583b7fe7a7741f1c54d0de9a2f45d7a6dc4bff"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/arodygin/php-linode-api3/zipball/22583b7fe7a7741f1c54d0de9a2f45d7a6dc4bff",
+                "reference": "22583b7fe7a7741f1c54d0de9a2f45d7a6dc4bff",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^1.11"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Linode\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Linode API v3 Client Library for PHP",
+            "homepage": "https://github.com/arodygin/php-linode-api3",
+            "keywords": [
+                "api",
+                "linode"
+            ],
+            "time": "2016-10-26 19:31:08"
+        },
         {
             "name": "classpreloader/classpreloader",
             "version": "3.0.0",
@@ -1868,6 +1908,54 @@
                 "dump"
             ],
             "time": "2016-11-03 08:04:31"
+        },
+        {
+            "name": "vakata/random",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/vakata/random.git",
+                "reference": "8a20e545bd2d07dc79dfa73793742cec6c7186e4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/vakata/random/zipball/8a20e545bd2d07dc79dfa73793742cec6c7186e4",
+                "reference": "8a20e545bd2d07dc79dfa73793742cec6c7186e4",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "clean/phpdoc-md": "dev-master",
+                "codeclimate/php-test-reporter": "dev-master",
+                "phpunit/phpunit": "4.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "vakata\\random\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "vakata",
+                    "email": "github@vakata.com",
+                    "homepage": "http://www.vakata.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A random int / string / byte generator",
+            "homepage": "https://github.com/vakata/random",
+            "keywords": [
+                "random",
+                "vakata"
+            ],
+            "time": "2016-10-27 11:39:56"
         },
         {
             "name": "vlucas/phpdotenv",
