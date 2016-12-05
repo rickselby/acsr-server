@@ -24,7 +24,7 @@ class DiscordApi
     public function __construct()
     {
         if (!env('DISCORD_BOT_KEY')) {
-            throw new Exception('Please set DISCORD_BOT_KEY before using Discord');
+            throw new \Exception('Please set DISCORD_BOT_KEY before using Discord');
         }
 
         $template = Request::init()
