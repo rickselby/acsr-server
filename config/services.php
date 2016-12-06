@@ -35,4 +35,10 @@ return [
         'secret' => env('STRIPE_SECRET'),
     ],
 
+    'steam' => [
+        // the client_id key is required, even though it isn't utilised by the Steam provider
+        'client_id' => null,
+        'client_secret' => env('STEAM_KEY'),
+        'redirect' => env('STEAM_REDIRECT_URI'),
+    ],
 ];

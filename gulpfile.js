@@ -14,6 +14,22 @@ require('laravel-elixir-vue-2');
  */
 
 elixir(mix => {
-    mix.sass('app.scss')
-       .webpack('app.js');
+    mix
+        .sass([
+            'app.scss'
+        ], 'resources/assets/generated/sass.css')
+        .styles([
+            '../generated/sass.css',
+            // done this way in case there's any plain CSS to add
+        ])
+        .scripts([
+            '../bower/jquery/dist/jquery.js',
+            '../bower/bootstrap-sass/assets/javascripts/bootstrap.js'
+        ])
+        .copy('resources/assets/bower/bootstrap-sass/assets/fonts/bootstrap', 'public/vendor/fonts')
+        .copy('resources/assets/bower/font-awesome/fonts', 'public/vendor/fonts')
+        .version([
+            'css/all.css',
+            'js/all.js'
+        ]);
 });

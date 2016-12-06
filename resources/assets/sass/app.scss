@@ -1,9 +1,10 @@
 
-// Fonts
-@import url(https://fonts.googleapis.com/css?family=Raleway:300,400,600);
+$icon-font-path: "../../vendor/fonts/";
+@import "../bower/bootstrap-sass/assets/stylesheets/bootstrap";
 
-// Variables
-@import "variables";
+$fa-font-path: "../../vendor/fonts";
+@import "../bower/font-awesome/scss/font-awesome";
 
-// Bootstrap
-@import "node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
+@import "../bower/bootstrap-social/bootstrap-social.scss";
+.btn-discord { @include btn-social(#7289DA); }
+.btn-steam   { @include btn-social(#7da10e); }
