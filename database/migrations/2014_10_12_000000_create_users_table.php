@@ -16,10 +16,21 @@ class CreateUsersTable extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
-            $table->string('email')->unique();
-            $table->string('password');
+            $table->boolean('new')->default(true);
             $table->rememberToken();
             $table->timestamps();
+        });
+
+        Schema::create('user_providers', function (Blueprint $table) {
+            $table->increments('id');
+            $table->unsignedInteger('user_id');
+            $table->string('provider_user_id');
+            $table->string('provider');
+            $table->string('name')->nullable();
+            $table->string('avatar')->nullable();
+            $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('CASCADE');
         });
     }
 
@@ -30,6 +41,7 @@ class CreateUsersTable extends Migration
      */
     public function down()
     {
+        Schema::drop('user_providers');
         Schema::drop('users');
     }
 }

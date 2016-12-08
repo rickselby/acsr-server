@@ -1,5 +1,12 @@
 /node_modules
+/public/build
+/public/css
+/public/fonts
+/public/js
 /public/storage
+/public/vendor
+/resources/assets/bower
+/resources/assets/generated
 /storage/debugbar
 /vendor
 /.idea

@@ -7,7 +7,16 @@
     "require": {
         "php": ">=5.6.4",
         "laravel/framework": "5.3.*",
-        "nategood/httpful": "^0.2.20"
+        "nategood/httpful": "^0.2.20",
+        "laravel/socialite": "^2.0",
+        "socialiteproviders/discord": "^1.0",
+        "socialiteproviders/steam": "dev-master",
+        "edvinaskrucas/notification": "^5.1",
+        "davejamesmiller/laravel-breadcrumbs": "^3.0",
+        "socialiteproviders/google": "^2.0",
+        "laravelcollective/html": "^5.3",
+        "nubs/random-name-generator": "^2.1",
+        "spatie/laravel-permission": "^1.5"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
