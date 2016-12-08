@@ -11,10 +11,10 @@ class UserProviderStore
      * @param $providerUser
      * @return UserProvider|null
      */
-    public function getByProvider($provider, $providerUser)
+    public function getByProvider($provider, $id)
     {
         return UserProvider::where('provider', $provider)
-            ->where('provider_user_id', $providerUser->id)
+            ->where('provider_user_id', $id)
             ->first();
     }
 

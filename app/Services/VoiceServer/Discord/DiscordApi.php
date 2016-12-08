@@ -307,13 +307,25 @@ class DiscordApi
      * @param int $channelID
      * @param string $message
      *
-     * @return Response
+     * @return object
      */
     public function messageChannel($channelID, $message)
     {
         return $this->post('/channels/'.$channelID.'/messages', [
             'content' => $message
-        ]);
+        ])->body;
+    }
+
+    /**
+     * Get the list of members of the given guild
+     *
+     * @param int $guildID
+     *
+     * @return []
+     */
+    public function getMembers($guildID)
+    {
+        return $this->get('/guilds/'.$guildID.'/members')->body;
     }
 
     /**************************************************************************

@@ -13,7 +13,7 @@
 @if ($user->getProvider($provider))
     <div class="col-sm-2">
         @if (count($user->providers) > 1)
-            {{ \Form::open(['route' => ['auth.destroy', $provider], 'method' => 'delete', 'class' => 'form-inline']) }}
+            {{ \Form::open(['route' => ['admin.user.provider-destroy', $user, $provider], 'method' => 'delete', 'class' => 'form-inline']) }}
                 <button class="btn btn-danger btn-xs">
                     Remove login
                 </button>

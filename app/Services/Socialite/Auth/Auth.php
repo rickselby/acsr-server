@@ -54,7 +54,7 @@ class Auth
      */
     protected function login($provider, $providerUser)
     {
-        $userProvider = $this->userProviderStore->getByProvider($provider, $providerUser);
+        $userProvider = $this->userProviderStore->getByProvider($provider, $providerUser->id);
         if ($userProvider) {
             \Auth::login($userProvider->user);
         } else {
@@ -81,7 +81,7 @@ class Auth
      */
     protected function addProvider($provider, $providerUser)
     {
-        $userProvider = $this->userProviderStore->getByProvider($provider, $providerUser);
+        $userProvider = $this->userProviderStore->getByProvider($provider, $providerUser->id);
 
         if ($userProvider) {
             // This login is already tied to a user; is it this user?

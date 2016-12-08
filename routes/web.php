@@ -27,6 +27,7 @@ Route::group(['prefix' => 'auth', 'namespace' => 'Auth'], function() {
 Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], function() {
 
     // User Management
+    Route::get('user/refresh-names', 'UserController@refreshNames')->name('user.refresh-names');
     Route::delete('user/{user}/provider/{provider}', 'UserController@removeProvider')->name('user.provider-destroy');
     Route::resource('user', 'UserController', ['only' => ['index', 'edit', 'destroy']]);
 
