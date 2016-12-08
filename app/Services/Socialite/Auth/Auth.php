@@ -33,7 +33,6 @@ class Auth
         try {
             $providerUser = \Socialite::driver($provider)->user();
         } catch (\Exception $e) {
-            dd($e);
             \Notification::add('error', 'Authorization failed');
             return;
         }

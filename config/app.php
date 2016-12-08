@@ -171,6 +171,7 @@ return [
         DaveJamesMiller\Breadcrumbs\ServiceProvider::class,
         Krucas\Notification\NotificationServiceProvider::class,
         SocialiteProviders\Manager\ServiceProvider::class,
+        Spatie\Permission\PermissionServiceProvider::class,
 
         /*
          * Application Service Providers...

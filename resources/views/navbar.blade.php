@@ -9,15 +9,40 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="navbar-brand" href="{{ route('home') }}">
-                Assetto Corsa
+                ACSR
             </a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
+                <!--
                 <li>
                     <a href="#">Something?</a>
                 </li>
+                -->
+
+                <!-- Admin options -->
+                @if (Gate::check('role-admin') || Gate::check('user-admin'))
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            Administration <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            @can('role-admin')
+                                <li>
+                                    <a href="{{ route('admin.role.index') }}">Role Management</a>
+                                </li>
+                            @endcan
+                            @can('user-admin')
+                                <li>
+                                    <a href="{{ route('admin.user.index') }}">User Management</a>
+                                </li>
+                            @endcan
+                        </ul>
+                    </li>
+                @endif
             </ul>
+
+            <!-- User login / management -->
             <ul class="nav navbar-nav navbar-right">
                 @if (Auth::check())
                     <li class="dropdown">
@@ -51,10 +76,6 @@
                         </ul>
                     </li>
 
-                    <li>
-
-
-                    </li>
                 @endif
             </ul>
         </div><!--/.nav-collapse -->

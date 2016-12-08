@@ -41,7 +41,7 @@ class AuthController extends Controller
     public function handleProviderCallback($provider)
     {
         $this->socialiteAuth->handleProviderCallback($provider);
-        if (\Auth::user()->new) {
+        if (!isset(\Auth::user()->new) || \Auth::user()->new) {
             return \Redirect::route('user.logins');
         } else {
             return \Redirect::intended();
