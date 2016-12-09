@@ -4,11 +4,17 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\Socialite\UserProviderStore;
+use App\Services\VoiceServer\DiscordVoiceServer;
 
 class UserController extends Controller
 {
-    public function __construct()
+    /** @var UserProviderStore */
+    protected $userProviderStore;
+
+    public function __construct(UserProviderStore $userProviderStore)
     {
+        $this->userProviderStore = $userProviderStore;
         $this->middleware('can:user-admin');
     }
 
@@ -58,64 +64,24 @@ class UserController extends Controller
     }
 
     /**
-     * Add a user to a role
+     * Remove a provider from a user
      *
-     * @param Request $request
-     * @param Role $role
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function addUser(Request $request, Role $role)
-    {
-        $user = User::findOrFail($request->get('user'));
-        $user->assignRole($role);
-        \Notification::add('success', 'User "'.$user->name.'" added');
-        return \Redirect::route('role.show', $role);
-    }
-
-    /**
-     * Remove a user from a role
-     *
-     * @param Role $role
      * @param User $user
+     * @param string $provider
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function removeUser(Role $role, User $user)
+    public function removeProvider(User $user, $provider)
     {
-        $user->removeRole($role);
-        \Notification::add('success', 'User "'.$user->name.'" removed');
-        return \Redirect::route('role.show', $role);
+        $this->userProviderStore->flush($user, $provider);
+
+        \Notification::add('success', 'Provider "'.ucfirst($provider).'" removed');
+        return \Redirect::route('admin.user.edit', $user);
     }
 
-    /**
-     * Add a permission to a role
-     *
-     * @param Request $request
-     * @param Role $role
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function addPermission(Request $request, Role $role)
+    public function refreshNames()
     {
-        $permission = Permission::findOrFail($request->get('permission'));
-        $role->givePermissionTo($permission);
-        \Notification::add('success', 'Permission "'.$permission->name.'" added');
-        return \Redirect::route('role.show', $role);
-    }
-
-    /**
-     * Remove a permission from a role
-     *
-     * @param Role $role
-     * @param Permission $permission
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function removePermission(Role $role, Permission $permission)
-    {
-        $role->revokePermissionTo($permission);
-        \Notification::add('success', 'Permission "'.$permission->name.'" removed');
-        return \Redirect::route('role.show', $role);
+        \Artisan::call('users:names');
+        return \Redirect::route('admin.user.index');
     }
 }

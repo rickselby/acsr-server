@@ -16,15 +16,7 @@ class DiscordVoiceServer implements VoiceServerContract
     public function __construct(DiscordApi $discordApi)
     {
         $this->discord = $discordApi;
-    }
-
-    /**
-     * Set which discord server we are connecting to. Expects:
-     *   guild => [guildID]
-     */
-    public function setServer(array $details)
-    {
-        $this->guild = $details['guild'];
+        $this->guild = env('DISCORD_GUILD_ID');
     }
 
     /**
@@ -102,5 +94,18 @@ class DiscordVoiceServer implements VoiceServerContract
         }
 
         $this->discord->messageChannel($channel, $text);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getMembers()
+    {
+        $members = [];
+        foreach($this->discord->getMembers($this->guild) AS $member) {
+            $members[$member->user->id] = isset($member->nick) ? $member->nick : $member->user->username;
+        }
+
+        return $members;
     }
 }

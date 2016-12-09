@@ -33,6 +33,11 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    protected $casts = [
+        'new' => 'boolean',
+        'on_server' => 'boolean',
+    ];
+
     /**
      * The providers this user can log in with
      * @return \Illuminate\Database\Eloquent\Relations\HasMany

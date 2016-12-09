@@ -45,6 +45,20 @@
             <!-- User login / management -->
             <ul class="nav navbar-nav navbar-right">
                 @if (Auth::check())
+
+                    @if (!Auth::user()->on_server)
+                    <li>
+                        <p class="navbar-btn">
+                            <a href="{{ env('DISCORD_GUILD_INVITE') }}" class="btn btn-social btn-discord btn-default">
+                                <span class="fa">
+                                    <img src="/img/discord.svg" style="width: 27px; margin-top: 4px" />
+                                </span>
+                                Join the Discord Server
+                            </a>
+                        </p>
+                    </li>
+                    @endif
+
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                             {{ \Auth::user()->name }} <span class="caret"></span>
@@ -58,6 +72,7 @@
                             </li>
                         </ul>
                     </li>
+
                 @else
 
                     <li class="dropdown">
