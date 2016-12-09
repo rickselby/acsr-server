@@ -167,6 +167,7 @@ return [
          * Package Service Providers...
          */
 
+        Camroncade\Timezone\TimezoneServiceProvider::class,
         Collective\Html\HtmlServiceProvider::class,
         DaveJamesMiller\Breadcrumbs\ServiceProvider::class,
         Krucas\Notification\NotificationServiceProvider::class,

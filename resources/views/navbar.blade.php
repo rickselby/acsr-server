@@ -68,6 +68,9 @@
                                 <a href="{{route('user.logins')}}">Manage Logins</a>
                             </li>
                             <li>
+                                <a href="{{route('user.settings')}}">Settings</a>
+                            </li>
+                            <li>
                                 <a href="{{route('auth.logout')}}">Logout</a>
                             </li>
                         </ul>

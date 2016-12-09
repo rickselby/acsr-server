@@ -11,7 +11,7 @@
 
 @section('content')
 
-    @if (\Auth::user()->new)
+    @if ($user->new)
         <div class="panel panel-info">
             <div class="panel-heading">
                 <h3 class="panel-title">Welcome!</h3>
@@ -50,7 +50,7 @@
     </p>
     <ul class="list-group">
         @foreach(\AuthProviders::required() AS $provider)
-            <li class="list-group-item container {{ \Auth::user()->getProvider($provider) ? 'list-group-item-success' : 'list-group-item-danger' }}">
+            <li class="list-group-item container {{ $user->getProvider($provider) ? 'list-group-item-success' : 'list-group-item-danger' }}">
                 @include('user.login-row')
             </li>
         @endforeach
@@ -62,7 +62,7 @@
     </p>
     <ul class="list-group">
         @foreach(\AuthProviders::optional() AS $provider)
-            <li class="list-group-item container {{ \Auth::user()->getProvider($provider) ? 'list-group-item-success' : '' }}">
+            <li class="list-group-item container {{ $user->getProvider($provider) ? 'list-group-item-success' : '' }}">
                 @include('user.login-row')
             </li>
         @endforeach

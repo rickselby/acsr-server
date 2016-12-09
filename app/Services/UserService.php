@@ -19,6 +19,9 @@ class UserService
         $this->userProvider = $userProvider;
     }
 
+    /**
+     * Update all users' names (and their on_server status) from the discord server
+     */
     public function updateNames()
     {
         \DB::table('users')->update(['on_server' => 0]);
@@ -34,4 +37,5 @@ class UserService
             }
         }
     }
+
 }
