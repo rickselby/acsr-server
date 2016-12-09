@@ -10,6 +10,8 @@ use Spatie\Permission\Traits\HasRoles;
  * @property $id
  * @property $name
  * @property $new
+ * @property $on_server
+ * @property $timezone
  */
 class User extends Authenticatable
 {
@@ -55,6 +57,16 @@ class User extends Authenticatable
     public function getProvider($provider)
     {
         return $this->providers->where('provider', $provider)->first();
+    }
+
+    public function adminEvents()
+    {
+        return $this->belongsToMany(Event::class, 'event_admins');
+    }
+
+    public function events()
+    {
+        return $this->belongsToMany(Event::class, 'event_signups');
     }
 
 }

@@ -14,14 +14,12 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <!--
                 <li>
-                    <a href="#">Something?</a>
+                    <a href="{{ route('event.index') }}">Events</a>
                 </li>
-                -->
 
                 <!-- Admin options -->
-                @if (Gate::check('role-admin') || Gate::check('user-admin'))
+                @if (Gate::check('role-admin') || Gate::check('user-admin') || Gate::check('event-admin') || Gate::check('event-create'))
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                             Administration <span class="caret"></span>
@@ -37,6 +35,11 @@
                                     <a href="{{ route('admin.user.index') }}">User Management</a>
                                 </li>
                             @endcan
+                            @if (Gate::check('event-admin') || Gate::check('event-create'))
+                                <li>
+                                    <a href="{{ route('admin.event.index') }}">Event Management</a>
+                                </li>
+                            @endif
                         </ul>
                     </li>
                 @endif

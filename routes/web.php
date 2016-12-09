@@ -39,7 +39,17 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
         Route::post('add-permission', 'RoleController@addPermission')->name('role.add-permission');
         Route::delete('remove-permission/{permission}', 'RoleController@removePermission')->name('role.remove-permission');
     });
+
+    // Event Management
+    Route::get('event/{event}/verify-destroy', 'EventController@verifyDestroy')->name('event.verify-destroy');
+    Route::post('event/{event}/config', 'EventController@config')->name('event.config');
+    Route::resource('event', 'EventController');
 });
+
+// User events
+Route::get('event', 'EventController@index')->name('event.index');
+Route::post('event/{event}/signup', 'EventController@signup')->name('event.signup');
+Route::post('event/{event}/cancel', 'EventController@cancelSignup')->name('event.signup.cancel');
 
 Route::get('/user/logins', 'UserController@logins')->name('user.logins');
 Route::get('/user/settings', 'UserController@settings')->name('user.settings');

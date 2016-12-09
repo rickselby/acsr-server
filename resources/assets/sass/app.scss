@@ -8,3 +8,18 @@ $fa-font-path: "../../vendor/fonts";
 @import "../bower/bootstrap-social/bootstrap-social.scss";
 .btn-discord { @include btn-social(#7289DA); }
 .btn-steam   { @include btn-social(#7da10e); }
+
+/**
+ * Vertically-aligned cols in a row
+ */
+.row-vertical {
+  display: table;
+  table-layout: fixed;
+  width: 100%;
+}
+
+.col-vertical {
+  display: table-cell;
+  vertical-align: middle;
+  float: none;
+}

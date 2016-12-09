@@ -2,9 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-class Server extends Model
+/**
+ * @property $id
+ * @property $provider_id
+ * @property $event_id
+ * @property $ip
+ * @property $password
+ * @property $settings
+ */
+class Server extends \Eloquent
 {
     protected $casts = [
         'event_id' => 'integer',
