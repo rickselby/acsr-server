@@ -42,3 +42,5 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
 });
 
 Route::get('/user/logins', 'UserController@logins')->name('user.logins');
+Route::get('/user/settings', 'UserController@settings')->name('user.settings');
+Route::post('/user/settings', 'UserController@updateSettings')->name('user.update-settings');
