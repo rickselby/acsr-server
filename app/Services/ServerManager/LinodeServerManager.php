@@ -4,6 +4,7 @@ namespace App\Services\ServerManager;
 
 use App\Contracts\ServerManagerContract;
 use App\Models\LinodeServer;
+use App\Services\ServerManager\Client\ClientAPI;
 use App\Services\ServerManager\Linode\Datacenters;
 use App\Services\ServerManager\Linode\Linode;
 
@@ -13,10 +14,13 @@ class LinodeServerManager implements ServerManagerContract
     protected $linode;#
     /** @var Datacenters */
     protected $datacenters;
+    /** @var ClientAPI */
+    protected $client;
 
-    public function __construct(Linode $linode, Datacenters $datacenters)
+    public function __construct(Linode $linode, Datacenters $datacenters, ClientAPI $clientAPI)
     {
         $this->linode = $linode;
+        $this->client = $clientAPI;
         $this->datacenters = $datacenters;
     }
 
@@ -45,7 +49,7 @@ class LinodeServerManager implements ServerManagerContract
      */
     public function setConfig(int $serverID, string $configFile)
     {
-        // TODO: Implement setConfig() method.
+        return $this->client->setConfig(LinodeServer::findOrFail($serverID), $configFile);
     }
 
     /**
@@ -56,7 +60,7 @@ class LinodeServerManager implements ServerManagerContract
      */
     public function setEntryList(int $serverID, string $entryListFile)
     {
-        // TODO: Implement setEntryList() method.
+        return $this->client->setEntryList(LinodeServer::findOrFail($serverID), $entryListFile);
     }
 
     /**
@@ -66,7 +70,7 @@ class LinodeServerManager implements ServerManagerContract
      */
     public function start(int $serverID)
     {
-        // TODO: Implement start() method.
+        return $this->client->start(LinodeServer::findOrFail($serverID));
     }
 
     /**
@@ -76,7 +80,7 @@ class LinodeServerManager implements ServerManagerContract
      */
     public function stop(int $serverID)
     {
-        // TODO: Implement stop() method.
+        return $this->client->stop(LinodeServer::findOrFail($serverID));
     }
 
     /**
@@ -86,7 +90,7 @@ class LinodeServerManager implements ServerManagerContract
      */
     public function getResults(int $serverID)
     {
-        // TODO: Implement getResults() method.
+        return $this->client->latestResults(LinodeServer::findOrFail($serverID));
     }
 
     /**
@@ -96,7 +100,7 @@ class LinodeServerManager implements ServerManagerContract
      */
     public function getLog(int $serverID)
     {
-        // TODO: Implement getLog() method.
+        return $this->client->serverLog(LinodeServer::findOrFail($serverID));
     }
 
     /**
@@ -106,7 +110,7 @@ class LinodeServerManager implements ServerManagerContract
      */
     public function destroy(int $serverID)
     {
-        $server = LinodeServer::find($serverID);
+        $server = LinodeServer::findOrFail($serverID);
         $this->linode->destroy($server->linode_id);
     }
 }
