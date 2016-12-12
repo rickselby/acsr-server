@@ -8,6 +8,8 @@
         "php": ">=5.6.4",
         "laravel/framework": "5.3.*",
         "nategood/httpful": "^0.2.20",
+        "arodygin/linode-api-php": "^1.1",
+        "vakata/random": "^1.0",
         "laravel/socialite": "^2.0",
         "socialiteproviders/discord": "^1.0",
         "socialiteproviders/steam": "dev-master",
