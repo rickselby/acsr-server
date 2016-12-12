@@ -13,18 +13,16 @@ class LinodeServerManager extends Migration
      */
     public function up()
     {
-        Schema::create('linode_servers', function(Blueprint $table) {
+        Schema::create('servers', function(Blueprint $table) {
             $table->increments('id');
-            $table->integer('linode_id');
+            $table->integer('provider_id');
             $table->integer('event_id');
-            $table->integer('datacenter_id');
             $table->string('ip');
             $table->string('password');
+            $table->text('settings');
 
             $table->timestamps();
         });
-
-
     }
 
     /**
@@ -34,6 +32,6 @@ class LinodeServerManager extends Migration
      */
     public function down()
     {
-        Schema::drop('linode_servers');
+        Schema::drop('servers');
     }
 }

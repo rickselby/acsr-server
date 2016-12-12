@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Services\ServerManager\Linode;
+namespace App\Services\ServerProvider\Linode;
 
 use App\Models\LinodeServer;
+use App\Models\Server;
 use Linode\AvailApi;
 
 class Datacenters
@@ -49,8 +50,8 @@ class Datacenters
         }
 
         // Count which datacenters are in use for this event
-        foreach(LinodeServer::forEvent($eventID) AS $server) {
-            $datacenters[$server['datacenter_id']]++;
+        foreach(Server::forEvent($eventID) AS $server) {
+            $datacenters[$server['settings']['datacenter_id']]++;
         }
 
         if (count(array_unique($datacenters)) == 1) {

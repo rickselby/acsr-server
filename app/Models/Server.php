@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class LinodeServer extends Model
+class Server extends Model
 {
     protected $casts = [
         'event_id' => 'integer',
-        'linode_id' => 'integer',
+        'provider_id' => 'integer',
+        'settings' => 'array',
     ];
 
     /**

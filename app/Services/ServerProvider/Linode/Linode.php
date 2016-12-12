@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\ServerManager\Linode;
+namespace App\Services\ServerProvider\Linode;
 
 use Linode\AvailApi;
 use Linode\Linode\ConfigApi;
