@@ -167,7 +167,12 @@ return [
          * Package Service Providers...
          */
 
-        //
+        Camroncade\Timezone\TimezoneServiceProvider::class,
+        Collective\Html\HtmlServiceProvider::class,
+        DaveJamesMiller\Breadcrumbs\ServiceProvider::class,
+        Krucas\Notification\NotificationServiceProvider::class,
+        SocialiteProviders\Manager\ServiceProvider::class,
+        Spatie\Permission\PermissionServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -227,6 +232,13 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
 
+        'Breadcrumbs' => DaveJamesMiller\Breadcrumbs\Facade::class,
+        'Form' => Collective\Html\FormFacade::class,
+        'Html' => Collective\Html\HtmlFacade::class,
+        'Notification' => Krucas\Notification\Facades\Notification::class,
+        'Socialite' => Laravel\Socialite\Facades\Socialite::class,
+
+        'AuthProviders' => App\Facades\Socialite\ProvidersFacade::class,
     ],
 
 ];
