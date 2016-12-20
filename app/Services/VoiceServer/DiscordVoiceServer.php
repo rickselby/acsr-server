@@ -4,6 +4,7 @@ namespace App\Services\VoiceServer;
 
 use App\Contracts\VoiceServerContract;
 use App\Services\VoiceServer\Discord\DiscordApi;
+use Carbon\Carbon;
 
 class DiscordVoiceServer implements VoiceServerContract
 {
@@ -35,10 +36,7 @@ class DiscordVoiceServer implements VoiceServerContract
             true // mentionable
         );
 
-        // Add the people to the role
-        foreach($users AS $user) {
-            $this->discord->addMemberToRole($this->guild, $user->discord_id, $role->id);
-        }
+        $this->addToGroup($role->id, $users);
 
         return $role->id;
     }
@@ -49,6 +47,24 @@ class DiscordVoiceServer implements VoiceServerContract
     public function destroyGroup(string $groupID)
     {
         $this->discord->deleteRole($this->guild, $groupID);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function addToGroup(string $groupID, array $users)
+    {
+        // Add the people to the role
+        foreach($users AS $user) {
+            // Don't try to add people to the group if they're not on the server...
+            if ($user->on_server) {
+                $this->discord->addMemberToRole(
+                    $this->guild,
+                    $user->getProvider('discord')->provider_user_id,
+                    $groupID
+                );
+            }
+        }
     }
 
     /**
@@ -86,14 +102,32 @@ class DiscordVoiceServer implements VoiceServerContract
      */
     public function postAnnoucement(string $text)
     {
-        $channelName = 'Announcements';
+        $this->postToChannel('Announcements', $text);
+    }
 
-        $channel = $this->discord->findChannel($this->guild, $channelName);
-        if (!$channel) {
-            $channel = $this->discord->createTextChannel($this->guild, $channelName)->id;
+    /**
+     * @inheritdoc
+     */
+    public function postLog(string $text)
+    {
+        $time = '['.Carbon::now()->toDateTimeString().']';
+        $this->postToChannel('log', $time.' '.$text);
+    }
+
+    /**
+     * Post a message to a channel
+     *
+     * @param $channel
+     * @param $text
+     */
+    protected function postToChannel($channel, $text)
+    {
+        $channelID = $this->discord->findChannel($this->guild, $channel);
+        if (!$channelID) {
+            $channelID = $this->discord->createTextChannel($this->guild, $channel)->id;
         }
 
-        $this->discord->messageChannel($channel, $text);
+        $this->discord->messageChannel($channelID, $text);
     }
 
     /**

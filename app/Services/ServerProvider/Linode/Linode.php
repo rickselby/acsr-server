@@ -93,8 +93,11 @@ class Linode
             $linodeID,
             (int) env('LINODE_STACKSCRIPT_ID'),
             json_encode([
-                'steam_user' => env('STEAM_LOGIN'),
-                'steam_pass' => env('STEAM_PASSWORD'),
+                'steam_login' => env('STEAM_LOGIN'),
+                'steam_password' => env('STEAM_PASSWORD'),
+                // when called through artisan, route() doesn't return subdirectories. Thanks.
+                'acsr_server_url' => \Config::get('app.url').route('api.results', [], false),
+                'acsr_server_ip' => gethostbyname(gethostname()),
             ]),
             (int) env('LINODE_DISTRO_ID'),
             'AC Server',

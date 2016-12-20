@@ -55,6 +55,14 @@ class LeftRightGrids implements GridsContract
     /**
      * @inheritdoc
      */
+    public function validDescription()
+    {
+        return 'Heat grid size should be double the number of heats per driver; and heats per driver should be even';
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function serversNeeded(int $driverCount)
     {
         // round the drivers up to the nearest two
@@ -67,7 +75,8 @@ class LeftRightGrids implements GridsContract
      */
     public function maxDriversFor(int $serverCount)
     {
-        return $serverCount * $this->driversPerHeat;
+        // 2 servers would be used at (heatsize * 2) drivers, so one server would be 2 drivers short of that...
+        return (($serverCount + 1) * $this->driversPerHeat) - 2;
     }
 
     /**

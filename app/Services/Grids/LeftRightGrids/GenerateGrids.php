@@ -54,7 +54,11 @@ class GenerateGrids
 
         foreach($races AS $raceID => $race) {
             foreach($race['grid'] AS $grid => $driver) {
-                $races[$raceID]['grid'][$grid] = $drivers[$driver];
+                if (isset($drivers[$driver])) {
+                    $races[$raceID]['grid'][$grid] = $drivers[$driver];
+                } else {
+                    unset($races[$raceID]['grid'][$grid]);
+                }
             }
         }
 
