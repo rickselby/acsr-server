@@ -10,18 +10,28 @@ namespace App\Models;
  * @property $session
  * @property $active
  * @property $server_id
+ * @property $group_id
+ * @property $channel_id
  */
 class Race extends \Eloquent
 {
+    protected $fillable = ['heat', 'session', 'name'];
+
     protected $casts = [
         'heat' => 'boolean',
         'session' => 'integer',
         'active' => 'boolean',
+        'complete' => 'boolean',
     ];
 
     public function event()
     {
-        return $this->hasOne(Event::class);
+        return $this->belongsTo(Event::class);
+    }
+
+    public function entrants()
+    {
+        return $this->hasMany(RaceEntrant::class);
     }
 
 }

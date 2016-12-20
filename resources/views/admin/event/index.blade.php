@@ -18,9 +18,7 @@
 
     <ul class="list-group">
         @forelse(\Auth::user()->adminEvents AS $event)
-            <a href="{{ route('admin.event.show', $event) }}" class="list-group-item">
-                {{ $event->name }}
-            </a>
+            @include('admin.event.index-event-row')
         @empty
             <li class="list-group-item">
                 No events.
@@ -33,9 +31,7 @@
 
     <ul class="list-group">
         @forelse($events AS $event)
-            <a href="{{ route('admin.event.show', $event) }}" class="list-group-item">
-                {{ $event->name }}
-            </a>
+            @include('admin.event.index-event-row')
         @empty
             <li class="list-group-item">
                 No events.

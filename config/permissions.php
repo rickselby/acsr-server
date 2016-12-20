@@ -7,5 +7,6 @@ return [
     'role-admin',
     'event-admin',  // Full access to all events
     'event-create', // Can create their own events
+    'points-admin', // Manage points sequences
     'user-admin',
 ];

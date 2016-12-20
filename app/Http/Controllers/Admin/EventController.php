@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Contracts\GridsContract;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EventRequest;
 use App\Models\Event;
+use App\Services\Events\PreparationService;
 use App\Services\EventService;
+use App\Services\PointsSequenceService;
 use Illuminate\Http\Request;
 
 class EventController extends Controller
@@ -39,11 +42,16 @@ class EventController extends Controller
     /**
      * Show the form for creating a new resource.
      *
+     * @param  GridsContract $gridsService
+     * @param  PointsSequenceService $pointsSequenceService
+     *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(GridsContract $gridsService, PointsSequenceService $pointsSequenceService)
     {
-        return view('admin.event.create');
+        return view('admin.event.create')
+            ->with('validation', $gridsService->validDescription())
+            ->with('pointsSequenceSelect', $pointsSequenceService->forSelect());
     }
 
     /**
@@ -67,23 +75,28 @@ class EventController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function show(Event $event)
+    public function show(Event $event, PreparationService $preparationService)
     {
         return view('admin.event.show')
-            ->with('event', $event);
+            ->with('event', $event)
+            ->with('valid', $preparationService->isValid($event));
     }
 
     /**
      * Show the form for editing the specified resource.
      *
      * @param  Event $event
+     * @param  GridsContract $gridsService
+     * @param  PointsSequenceService $pointsSequenceService
      *
      * @return \Illuminate\Http\Response
      */
-    public function edit(Event $event)
+    public function edit(Event $event, GridsContract $gridsService, PointsSequenceService $pointsSequenceService)
     {
         return view('admin.event.edit')
-            ->with('event', $event);
+            ->with('event', $event)
+            ->with('validation', $gridsService->validDescription())
+            ->with('pointsSequenceSelect', $pointsSequenceService->forSelect());
     }
 
     /**
@@ -142,4 +155,5 @@ class EventController extends Controller
         \Notification::add('success', 'Server Config updated');
         return \Redirect::route('admin.event.show', $event);
     }
+
 }

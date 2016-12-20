@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Services\EventService;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -25,7 +26,13 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        // Update user names from the discord server hourly
         $schedule->command('users:names')->hourly();
+
+        // Try to create servers for events every half hour
+        $schedule->call(function(EventService $eventService) {
+            $eventService->createServers();
+        });
     }
 
     /**
