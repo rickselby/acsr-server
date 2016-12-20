@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Services\Events\HeatsService;
 use App\Services\EventService;
+use Illuminate\Http\Request;
 
 class EventController extends Controller
 {
@@ -53,4 +55,5 @@ class EventController extends Controller
         $eventService->cancelSignup($event);
         return \Redirect::route('event.index');
     }
+
 }

@@ -6,6 +6,11 @@ namespace App\Models;
  * @property $id
  * @property $event_id
  * @property $user_id
+ * @property $grid
+ * @property $position
+ * @property $time
+ * @property $laps
+ * @property $fastest_lap
  */
 class RaceEntrant extends \Eloquent
 {
@@ -17,13 +22,23 @@ class RaceEntrant extends \Eloquent
         'fastest_lap' => 'integer',
     ];
 
-    protected function race()
+    public function race()
     {
-        return $this->hasOne(Race::class);
+        return $this->belongsTo(Race::class);
     }
 
-    protected function user()
+    public function user()
     {
-        return $this->hasOne(User::class);
+        return $this->belongsTo(User::class);
+    }
+
+    public function scopeGrid($query)
+    {
+        return $query->orderBy('grid');
+    }
+
+    public function scopeResults($query)
+    {
+        return $query->orderBy('position');
     }
 }

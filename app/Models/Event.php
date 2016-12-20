@@ -16,13 +16,17 @@ use Collective\Html\Eloquent\FormAccessible;
  * @property $car_model
  * @property $automate
  * @property $config
+ * @property $started
+ * @property $finished
  */
 class Event extends \Eloquent
 {
     use FormAccessible;
 
     protected $dates = [
-        'start'
+        'start',
+        'started',
+        'finished',
     ];
 
     protected $casts = [
@@ -62,6 +66,16 @@ class Event extends \Eloquent
     public function admins()
     {
         return $this->belongsToMany(User::class, 'event_admins');
+    }
+
+    public function servers()
+    {
+        return $this->hasMany(Server::class);
+    }
+
+    public function pointsSequence()
+    {
+        return $this->belongsTo(PointsSequence::class);
     }
 
     /**

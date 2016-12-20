@@ -69,4 +69,21 @@ class User extends Authenticatable
         return $this->belongsToMany(Event::class, 'event_signups');
     }
 
+
+    /**
+     * Check if the given user has the required providers
+     *
+     * @return bool
+     */
+    public function hasRequiredProviders()
+    {
+        foreach(\AuthProviders::required() AS $provider) {
+            if (!$this->getProvider($provider)) {
+                return false;
+            }
+        }
+
+        // All required providers found
+        return true;
+    }
 }

@@ -19,7 +19,7 @@
                 </li>
 
                 <!-- Admin options -->
-                @if (Gate::check('role-admin') || Gate::check('user-admin') || Gate::check('event-admin') || Gate::check('event-create'))
+                @if (Gate::check('role-admin') || Gate::check('user-admin') || Gate::check('event-admin') || Gate::check('event-create') || Gate::check('points-admin'))
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                             Administration <span class="caret"></span>
@@ -40,6 +40,11 @@
                                     <a href="{{ route('admin.event.index') }}">Event Management</a>
                                 </li>
                             @endif
+                            @can('points-admin')
+                                <li>
+                                    <a href="{{ route('admin.points-sequence.index') }}">Points Sequences</a>
+                                </li>
+                            @endcan
                         </ul>
                     </li>
                 @endif

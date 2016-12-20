@@ -2,13 +2,23 @@
 
 namespace App\Services;
 
+use App\Contracts\VoiceServerContract;
 use App\Http\Requests\EventRequest;
 use App\Models\Event;
-use App\Models\User;
+use App\Models\PointsSequence;
+use App\Services\Events\PreparationService;
 use Carbon\Carbon;
 
 class EventService
 {
+    /** @var PreparationService */
+    protected $preparationService;
+
+    public function __construct(PreparationService $preparationService)
+    {
+        $this->preparationService = $preparationService;
+    }
+
     /**
      * Create an event from the request
      *
@@ -18,9 +28,10 @@ class EventService
      */
     public function create(EventRequest $request)
     {
-        $event = Event::create($request->all());
-        $event->admins()->attach(\Auth::user());
+        $event = new Event();
+        $this->update($event, $request);
         $event->save();
+        $event->admins()->attach(\Auth::user());
         return $event;
     }
 
@@ -33,6 +44,9 @@ class EventService
     public function update(Event $event, EventRequest $request)
     {
         $event->fill($request->all());
+        $event->pointsSequence()->associate(
+            PointsSequence::find($request->get('points_sequence_id'))
+        );
         $event->save();
     }
 
@@ -56,12 +70,16 @@ class EventService
      */
     public function openEvents()
     {
-        $events = Event::where('start', '>', Carbon::now())->get();
+        $events = Event::whereNull('started')->get();
 
-        // If there is a user logged in, add whether they are signed up or not
-        if (\Auth::check()) {
-            foreach ($events AS $event) {
-                $event->signedup = $event->signups->contains(\Auth::user());
+        foreach ($events AS $event) {
+            // If there is a user logged in, add whether they are signed up or not
+            if (\Auth::check()) {
+                $event->signed_up = $event->signups->contains(\Auth::user());
+            }
+            $maxSlots = $this->preparationService->getMaxSlots($event);
+            if ($maxSlots != PHP_INT_MAX) {
+                $event->max_slots = $maxSlots;
             }
         }
 
@@ -75,7 +93,7 @@ class EventService
      */
     public function pastEvents()
     {
-        return Event::where('start', '<', Carbon::now())->get();
+        return Event::whereNotNull('started')->get();
     }
 
     /**
@@ -86,7 +104,14 @@ class EventService
     public function signup(Event $event)
     {
         if (!$event->signups->contains(\Auth::user())) {
-            $event->signups()->attach(\Auth::user());
+
+            // Check there is still room, given the number of servers
+            if ($this->preparationService->getMaxSlots($event) > $event->signups->count()) {
+                $event->signups()->attach(\Auth::user());
+            } else {
+                \Notification::add('warning', 'Sorry, that event is full');
+            }
+
         }
     }
 
@@ -99,6 +124,23 @@ class EventService
     {
         if ($event->signups->contains(\Auth::user())) {
             $event->signups()->detach(\Auth::user());
+        }
+    }
+
+    /**
+     * Try to create servers for upcoming events
+     */
+    public function createServers()
+    {
+        foreach($this->openEvents() AS $event) {
+            // Check if we're within 45 minutes of the start of the event
+            if ($event->start->subMinutes(45)->lt(Carbon::now())) {
+                // Check the servers haven't already been created
+                if (!$event->servers->count()) {
+                    // Create the servers for this event
+                    $this->preparationService->createServers($event);
+                }
+            }
         }
     }
 

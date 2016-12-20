@@ -3,6 +3,7 @@
 namespace App\Services\ServerManager\Client;
 
 use App\Models\Server;
+use Httpful\Exception\ConnectionErrorException;
 use Httpful\Mime;
 use Httpful\Request;
 use Httpful\Response;
@@ -16,9 +17,8 @@ class ClientAPI
      */
     public function setConfig(Server $server, string $config)
     {
-        return $this->put($server, '/config', [
-            'contents' => $config
-        ])->body;
+        $response = $this->put($server, '/config', ['content' => $config]);
+        return $response->body->updated;
     }
 
     /**
@@ -28,9 +28,7 @@ class ClientAPI
      */
     public function setEntryList(Server $server, string $entryList)
     {
-        $response = $this->put($server, '/entrylist', [
-            'contents' => $entryList
-        ]);
+        $response = $this->put($server, '/entrylist', ['content' => $entryList]);
         return $response->body->updated;
     }
 
@@ -40,8 +38,11 @@ class ClientAPI
      */
     public function ping(Server $server)
     {
-        $response = $this->get($server, '/ping');
-        // TODO: check for response code too? Likely to fail a few times...
+        try {
+            $response = $this->get($server, '/ping');
+        } catch (ConnectionErrorException $e) {
+            return false;
+        }
         return $response->body->success;
     }
 

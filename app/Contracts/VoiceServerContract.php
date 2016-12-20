@@ -23,6 +23,14 @@ interface VoiceServerContract
     public function destroyGroup(string $groupID);
 
     /**
+     * Add more users to a group
+     * @param string $groupID
+     * @param array $users
+     * @return bool
+     */
+    public function addToGroup(string $groupID, array $users);
+
+    /**
      * Create a voice channel for the given groups
      * @param string $name
      * @param string[] $groupIDs
@@ -43,6 +51,13 @@ interface VoiceServerContract
      * @return bool
      */
     public function postAnnoucement(string $text);
+
+    /**
+     * Post a log message
+     * @param string $text
+     * @return bool
+     */
+    public function postLog(string $text);
 
     /**
      * Get a list of members of the server

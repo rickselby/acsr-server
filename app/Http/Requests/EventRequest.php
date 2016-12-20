@@ -30,6 +30,7 @@ class EventRequest extends Request
             'laps_per_heat' => 'required|integer',
             'laps_per_final' => 'required|integer',
             'car_model' => 'required|string',
+            'points_sequence_id' => 'required|exists:points_sequences,id'
         ];
     }
 }

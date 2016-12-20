@@ -96,6 +96,9 @@ class AssignSlots
 
         // How many heats can we run at a time?
         $parallelHeats = (int) floor($driverCount / $driversPerHeat);
+        if ($parallelHeats == 0) {
+            throw new \Exception('Cannot generate heats with less drivers than a single heat');
+        }
 
         // So, how many sessions...?
         $sessionCount = (int) ceil($heatCount / $parallelHeats);

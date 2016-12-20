@@ -26,6 +26,9 @@ Route::group(['prefix' => 'auth', 'namespace' => 'Auth'], function() {
 // Admin Things
 Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], function() {
 
+    // Points Sequence Management
+    Route::resource('points-sequence', 'PointsSequenceController');
+
     // User Management
     Route::get('user/refresh-names', 'UserController@refreshNames')->name('user.refresh-names');
     Route::delete('user/{user}/provider/{provider}', 'UserController@removeProvider')->name('user.provider-destroy');
@@ -44,6 +47,13 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
     Route::get('event/{event}/verify-destroy', 'EventController@verifyDestroy')->name('event.verify-destroy');
     Route::post('event/{event}/config', 'EventController@config')->name('event.config');
     Route::resource('event', 'EventController');
+
+    // Event Dashboard
+    Route::get('event/{event}/dashboard', 'EventDashboardController@dashboard')->name('event.dashboard');
+    Route::delete('event/{event}/dashboard/signup/{user}', 'EventDashboardController@destroySignup')->name('event.dashboard.signup.destroy');
+    Route::post('event/{event}/dashboard/grids', 'EventDashboardController@grids')->name('event.dashboard.grids');
+    Route::post('event/{event}/dashboard/start-heats', 'EventDashboardController@startHeats')->name('event.dashboard.start-heats');
+    Route::post('event/{event}/dashboard/start-finals', 'EventDashboardController@startFinals')->name('event.dashboard.start-finals');
 });
 
 // User events

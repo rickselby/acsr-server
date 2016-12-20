@@ -12,6 +12,8 @@ namespace App\Models;
  */
 class Server extends \Eloquent
 {
+    protected $fillable = ['provider_id', 'ip', 'password', 'settings'];
+
     protected $casts = [
         'event_id' => 'integer',
         'provider_id' => 'integer',
@@ -26,7 +28,7 @@ class Server extends \Eloquent
      *
      * @return mixed
      */
-    protected function scopeForEvent($query, $eventID)
+    public function scopeForEvent($query, $eventID)
     {
         return $query->where('event_id', $eventID);
     }

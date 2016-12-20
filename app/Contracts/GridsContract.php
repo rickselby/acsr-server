@@ -28,6 +28,13 @@ interface GridsContract
     public function isValid();
 
     /**
+     * Get a description of how to make the options valid
+     *
+     * @return string
+     */
+    public function validDescription();
+
+    /**
      * Get a count of how many servers are needed for the given number of drivers
      * @param int $driverCount
      * @return int

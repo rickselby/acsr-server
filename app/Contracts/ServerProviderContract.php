@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Contracts;
+use App\Models\Event;
 use App\Models\Server;
 
 /**
@@ -13,7 +14,7 @@ interface ServerProviderContract
      * @param int $eventID ID of the event we're creating a server for
      * @return int|false
      */
-    public function create(int $eventID);
+    public function create(Event $event);
 
     /**
      * Destroy a server
