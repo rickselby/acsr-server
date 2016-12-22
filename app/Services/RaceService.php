@@ -145,6 +145,8 @@ class RaceService
     protected function saveResults($resultsJson, Race $race)
     {
         $this->voiceService->postLog('Saving results for "'.$race->name.'"');
+        // Save the results JSON file
+        \File::put($this->getResultsPath($race), $resultsJson);
 
         // get a list of entrants keyed by steam ID
         $entrants = [];
@@ -200,4 +202,8 @@ class RaceService
         $this->voiceService->destroyGroup($race->group_id);
     }
 
+    protected function getResultsPath(Race $race)
+    {
+        return storage_path('app/results/'.$race->id.'.json');
+    }
 }
