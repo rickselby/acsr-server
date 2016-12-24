@@ -9,6 +9,7 @@ namespace App\Models;
  * @property $ip
  * @property $password
  * @property $settings
+ * @property $race_id
  */
 class Server extends \Eloquent
 {

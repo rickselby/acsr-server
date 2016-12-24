@@ -2,6 +2,7 @@
 
 namespace App\Services\Events;
 
+use App\Contracts\ServerManagerContract;
 use App\Contracts\ServerProviderContract;
 use App\Contracts\VoiceServerContract;
 use App\Models\Event;
@@ -16,18 +17,22 @@ class DashboardService
     protected $raceService;
     /** @var ServerProviderContract */
     protected $serverProviderService;
+    /** @var ServerManagerContract */
+    protected $serverManagerService;
 
     public function __construct(
         VoiceServerContract $voiceServerContract,
         RaceService $raceService,
         FinalsService $finalsService,
-        ServerProviderContract $serverProviderContract
+        ServerProviderContract $serverProviderContract,
+        ServerManagerContract $serverManagerContract
     )
     {
         $this->voiceService = $voiceServerContract;
         $this->raceService = $raceService;
         $this->finalsService = $finalsService;
         $this->serverProviderService = $serverProviderContract;
+        $this->serverManagerService = $serverManagerContract;
     }
 
     /**
@@ -96,11 +101,30 @@ class DashboardService
     }
 
     /**
+     * Get the list of servers for the event and their status
+     *
+     * @param Event $event
+     *
+     * @return array
+     */
+    public function serverStatus(Event $event)
+    {
+        $servers = [];
+        foreach($event->servers AS $server) {
+            $servers[] = [
+                'server' => $server,
+                'available' => $this->serverManagerService->isAvailable($server),
+            ];
+        }
+        return $servers;
+    }
+
+    /**
      * Run the next session for the given event
      *
      * @param Event $event
      */
-    protected function startNextSession(Event $event)
+    public function startNextSession(Event $event)
     {
         $session = $this->getNextSession($event);
 

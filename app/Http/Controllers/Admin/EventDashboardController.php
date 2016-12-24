@@ -46,6 +46,7 @@ class EventDashboardController extends Controller
     {
         return view('admin.event.dashboard')
             ->with('event', $event)
+            ->with('servers', $this->dashboardService->serverStatus($event))
             ->with('sections', $this->dashboardService->sections($event))
             ->with('maxDrivers', $this->preparationService->getMaxSlots($event))
             ->with('heatStandings', $this->standingsService->heatStandings($event))
