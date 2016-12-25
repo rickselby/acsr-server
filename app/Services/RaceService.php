@@ -202,7 +202,7 @@ class RaceService
         $this->voiceService->destroyGroup($race->group_id);
     }
 
-    protected function getResultsPath(Race $race)
+    public function getResultsPath(Race $race)
     {
         return storage_path('app/results/'.$race->id.'.json');
     }

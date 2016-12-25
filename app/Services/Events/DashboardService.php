@@ -8,6 +8,7 @@ use App\Contracts\VoiceServerContract;
 use App\Models\Event;
 use App\Models\Race;
 use App\Services\RaceService;
+use Carbon\Carbon;
 
 class DashboardService
 {
@@ -53,9 +54,9 @@ class DashboardService
             'grids' => !$event->started,
             // Can't start until we've generated the grids!
             'start-heats' => $event->races->count() && !$event->started,
+            'races' => $event->races->count(),
             // Show heat standings once we're up and running
             'heat-standings' => $event->started,
-
             'start-finals' => $this->canStartFinals($event),
         ];
     }
@@ -203,6 +204,9 @@ class DashboardService
                 $event->races->count() == $event->races->where('complete', true)->count()
             )
         ) {
+            $event->finished = Carbon::now();
+            $event->save();
+
             $this->voiceService->postLog('Shutting down servers!');
             // Start shutting things down!
             foreach($event->servers AS $server) {

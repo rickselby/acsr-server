@@ -56,6 +56,8 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
     Route::post('event/{event}/dashboard/start-finals', 'EventDashboardController@startFinals')->name('event.dashboard.start-finals');
 });
 
+Route::get('race/{race}/json', 'RaceController@json')->name('race.json');
+
 // User events
 Route::get('event', 'EventController@index')->name('event.index');
 Route::post('event/{event}/signup', 'EventController@signup')->name('event.signup');
