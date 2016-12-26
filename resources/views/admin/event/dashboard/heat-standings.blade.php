@@ -26,7 +26,7 @@
                         <td>{{ $standing['user']->name }}</td>
                         <td>{{ count($standing['positions']) }}</td>
                         <td>{{ $standing['points'] }}</td>
-                        <td>{{ $standing['fastestLap'] }}</td>
+                        <td>{{ \Times::toString($standing['fastestLap']) }}</td>
                     </tr>
                 @endforeach
                 </tbody>

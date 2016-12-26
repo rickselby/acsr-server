@@ -2,11 +2,13 @@
 
 namespace App\Services\Events;
 
+use App\Contracts\ServerManagerContract;
 use App\Contracts\ServerProviderContract;
 use App\Contracts\VoiceServerContract;
 use App\Models\Event;
 use App\Models\Race;
 use App\Services\RaceService;
+use Carbon\Carbon;
 
 class DashboardService
 {
@@ -16,18 +18,22 @@ class DashboardService
     protected $raceService;
     /** @var ServerProviderContract */
     protected $serverProviderService;
+    /** @var ServerManagerContract */
+    protected $serverManagerService;
 
     public function __construct(
         VoiceServerContract $voiceServerContract,
         RaceService $raceService,
         FinalsService $finalsService,
-        ServerProviderContract $serverProviderContract
+        ServerProviderContract $serverProviderContract,
+        ServerManagerContract $serverManagerContract
     )
     {
         $this->voiceService = $voiceServerContract;
         $this->raceService = $raceService;
         $this->finalsService = $finalsService;
         $this->serverProviderService = $serverProviderContract;
+        $this->serverManagerService = $serverManagerContract;
     }
 
     /**
@@ -48,9 +54,9 @@ class DashboardService
             'grids' => !$event->started,
             // Can't start until we've generated the grids!
             'start-heats' => $event->races->count() && !$event->started,
+            'races' => $event->races->count(),
             // Show heat standings once we're up and running
             'heat-standings' => $event->started,
-
             'start-finals' => $this->canStartFinals($event),
         ];
     }
@@ -96,11 +102,30 @@ class DashboardService
     }
 
     /**
+     * Get the list of servers for the event and their status
+     *
+     * @param Event $event
+     *
+     * @return array
+     */
+    public function serverStatus(Event $event)
+    {
+        $servers = [];
+        foreach($event->servers AS $server) {
+            $servers[] = [
+                'server' => $server,
+                'available' => $this->serverManagerService->isAvailable($server),
+            ];
+        }
+        return $servers;
+    }
+
+    /**
      * Run the next session for the given event
      *
      * @param Event $event
      */
-    protected function startNextSession(Event $event)
+    public function startNextSession(Event $event)
     {
         $session = $this->getNextSession($event);
 
@@ -179,6 +204,9 @@ class DashboardService
                 $event->races->count() == $event->races->where('complete', true)->count()
             )
         ) {
+            $event->finished = Carbon::now();
+            $event->save();
+
             $this->voiceService->postLog('Shutting down servers!');
             // Start shutting things down!
             foreach($event->servers AS $server) {

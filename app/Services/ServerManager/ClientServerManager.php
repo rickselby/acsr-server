@@ -59,6 +59,18 @@ class ClientServerManager implements ServerManagerContract
     }
 
     /**
+     * Check if the given server is up and running and ready
+     *
+     * @param Server $server
+     *
+     * @return bool
+     */
+    public function isAvailable(Server $server)
+    {
+        return $this->client->ping($server);
+    }
+
+    /**
      * Get the results from a server
      * @param Server $server
      * @return string Assetto Corsa Results File

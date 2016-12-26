@@ -39,6 +39,13 @@ interface ServerManagerContract
     public function stop(Server $server);
 
     /**
+     * Check if the given server is up and running and ready
+     * @param Server $server
+     * @return bool
+     */
+    public function isAvailable(Server $server);
+
+    /**
      * Get the results from a server
      * @param Server $server
      * @return string Assetto Corsa Results File

@@ -32,7 +32,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
     // User Management
     Route::get('user/refresh-names', 'UserController@refreshNames')->name('user.refresh-names');
     Route::delete('user/{user}/provider/{provider}', 'UserController@removeProvider')->name('user.provider-destroy');
-    Route::resource('user', 'UserController', ['only' => ['index', 'edit', 'destroy']]);
+    Route::resource('user', 'UserController', ['only' => ['index', 'edit', 'update', 'destroy']]);
 
     // Role Management
     Route::resource('role', 'RoleController');
@@ -55,6 +55,8 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
     Route::post('event/{event}/dashboard/start-heats', 'EventDashboardController@startHeats')->name('event.dashboard.start-heats');
     Route::post('event/{event}/dashboard/start-finals', 'EventDashboardController@startFinals')->name('event.dashboard.start-finals');
 });
+
+Route::get('race/{race}/json', 'RaceController@json')->name('race.json');
 
 // User events
 Route::get('event', 'EventController@index')->name('event.index');

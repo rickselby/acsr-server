@@ -20,6 +20,10 @@
         @include('admin.event.dashboard.grids')
     @endif
 
+    @if ($sections['races'])
+        @include('admin.event.dashboard.races')
+    @endif
+
     @if ($sections['start-heats'])
         @include('admin.event.dashboard.start-heats')
     @endif

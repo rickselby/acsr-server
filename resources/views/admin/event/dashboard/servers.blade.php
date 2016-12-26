@@ -20,12 +20,23 @@
             </tr>
             </thead>
             <tbody>
-            @foreach($event->servers AS $server)
+            @foreach($servers AS $server)
                 <tr>
-                    <td>{{ $server->provider_id }}</td>
-                    <td>{{ $server->ip }}</td>
-                    <td>{{ $server->password }}</td>
-                    <td>?</td>
+                    <td>{{ $server['server']->provider_id }}</td>
+                    <td>{{ $server['server']->ip }}</td>
+                    <td>{{ $server['server']->password }}</td>
+                    <td>
+                        @if ($server['available'])
+                            @if ($server['server']->race_id)
+                                Running
+                            @else
+                                Ready
+                            @endif
+                        @else
+                            Booting...?
+                        @endif
+
+                    </td>
                 </tr>
             @endforeach
             </tbody>

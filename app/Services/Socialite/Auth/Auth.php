@@ -7,19 +7,22 @@ use App\Models\UserProvider;
 use App\Services\Socialite\Auth\ProviderFields\Provider;
 use App\Services\Socialite\Providers;
 use App\Services\Socialite\UserProviderStore;
+use App\Services\UserService;
 
 class Auth
 {
     /** @var UserProviderStore */
     protected $userProviderStore;
-
     /** @var Providers */
     protected $providers;
+    /** @var UserService */
+    protected $userService;
 
-    public function __construct(UserProviderStore $userProviderStore, Providers $providers)
+    public function __construct(UserProviderStore $userProviderStore, Providers $providers, UserService $userService)
     {
         $this->userProviderStore = $userProviderStore;
         $this->providers = $providers;
+        $this->userService = $userService;
     }
 
     /**
@@ -58,12 +61,8 @@ class Auth
         if ($userProvider) {
             \Auth::login($userProvider->user);
         } else {
-            // Create the new user - give them a fake name for now
-            $generator = new \Nubs\RandomNameGenerator\Alliteration();
-
-            $user = User::create([
-                'name' => $generator->getName()
-            ]);
+            // Create the new user
+            $user = $this->userService->create();
 
             // Attach the current provider to the user
             $this->attachProvider($user, $provider, $providerUser);

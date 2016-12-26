@@ -11,6 +11,28 @@
 
 @section('content')
 
+    <h2>Update Details</h2>
+
+    {!! Form::model($user, ['route' => ['admin.user.update', $user], 'method' => 'put', 'class' => 'form-horizontal']) !!}
+
+    <div class="form-group">
+        {!! Form::label('number', 'Number', ['class' => 'col-sm-2 control-label']) !!}
+        <div class="col-sm-10">
+            {!! Form::text('number', null, ['class' => 'form-control']) !!}
+            <p class="help-block">
+                Text field - can be '001' or whatever
+            </p>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-10 col-sm-offset-2">
+            {!! Form::submit('Update Details', ['class' => 'btn btn-primary']) !!}
+        </div>
+    </div>
+
+    {!! Form::close() !!}
+
     <h2>Authorized logins</h2>
 
     <ul class="list-group">

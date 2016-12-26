@@ -3,7 +3,10 @@
 namespace App\Services;
 
 use App\Contracts\VoiceServerContract;
+use App\Http\Requests\UserRequest;
+use App\Models\User;
 use App\Services\Socialite\UserProviderStore;
+use Nubs\RandomNameGenerator\Alliteration;
 
 class UserService
 {
@@ -17,6 +20,34 @@ class UserService
     {
         $this->voiceServer = $voiceServer;
         $this->userProvider = $userProvider;
+    }
+
+    /**
+     * Create a dummy user (heh)
+     *
+     * @return User
+     */
+    public function create()
+    {
+        $generator = new Alliteration();
+
+        $user = User::create([
+            'name' => $generator->getName()
+        ]);
+
+        return $user;
+    }
+
+    /**
+     * Update a user from a request
+     *
+     * @param UserRequest $request
+     * @param User $user
+     */
+    public function update(UserRequest $request, User $user)
+    {
+        $user->fill($request->all());
+        $user->save();
     }
 
     /**
@@ -37,6 +68,5 @@ class UserService
             }
         }
     }
-
 
 }

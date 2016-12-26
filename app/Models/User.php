@@ -12,6 +12,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property $new
  * @property $on_server
  * @property $timezone
+ * @property $number
  */
 class User extends Authenticatable
 {
@@ -23,7 +24,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name',
+        'name', 'number',
     ];
 
     /**
@@ -69,6 +70,15 @@ class User extends Authenticatable
         return $this->belongsToMany(Event::class, 'event_signups');
     }
 
+    /**
+     * Link the skin to the driver numbe
+     *
+     * @return mixed
+     */
+    public function getSkinAttribute()
+    {
+        return $this->number;
+    }
 
     /**
      * Check if the given user has the required providers
