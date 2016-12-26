@@ -25,7 +25,6 @@
                         <th class="text-center">{{ ucfirst($provider) }}</th>
                     @endforeach
                     <th class="text-center">On Server?</th>
-                    <th class="text-center">In General?</th>
                     <th class="text-right">Remove</th>
                 </tr>
             </thead>
@@ -54,10 +53,6 @@
                             <span class="fa fa-times" style="color: red"></span>
                         </td>
                     @endif
-
-                    <td class="text-center">
-                        <i>(to be implemented)</i>
-                    </td>
 
                     <td class="text-right">
                         {{ Form::open(['route' => ['admin.event.dashboard.signup.destroy', $event, $user], 'method' => 'delete']) }}

@@ -12,27 +12,6 @@
 
     <h2>Upcoming Events</h2>
 
-    <div class="panel panel-info">
-        <div class="panel-heading">
-            <h3 class="panel-title">
-                <a role="button" data-toggle="collapse" href="#help">
-                    Signup Help
-                </a> <span class="caret"></span>
-            </h3>
-        </div>
-        <div class="panel-collapse collapse" id="help" role="tabpanel">
-            <div class="panel-body">
-
-                <p>
-                    Sign up for an event here. You must be logged in to do so.
-                </p>
-
-                Please be in the discord server and connected to the general voice channel at the start time of the event.
-
-            </div>
-        </div>
-    </div>
-
     <ul class="list-group">
         @forelse($open AS $event)
             <li class="list-group-item container-fluid {{ $event->signed_up ? 'list-group-item-success' : '' }}">
