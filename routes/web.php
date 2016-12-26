@@ -32,7 +32,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
     // User Management
     Route::get('user/refresh-names', 'UserController@refreshNames')->name('user.refresh-names');
     Route::delete('user/{user}/provider/{provider}', 'UserController@removeProvider')->name('user.provider-destroy');
-    Route::resource('user', 'UserController', ['only' => ['index', 'edit', 'destroy']]);
+    Route::resource('user', 'UserController', ['only' => ['index', 'edit', 'update', 'destroy']]);
 
     // Role Management
     Route::resource('role', 'RoleController');

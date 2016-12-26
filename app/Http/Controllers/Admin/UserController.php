@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UserRequest;
 use App\Models\User;
 use App\Services\Socialite\UserProviderStore;
-use App\Services\VoiceServer\DiscordVoiceServer;
+use App\Services\UserService;
 
 class UserController extends Controller
 {
@@ -40,6 +41,22 @@ class UserController extends Controller
     {
         return view('admin.user.edit')
             ->with('user', $user);
+    }
+
+    /**
+     * Update the details for the given user
+     *
+     * @param UserRequest $request
+     * @param User $user
+     * @param UserService $userService
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function update(UserRequest $request, User $user, UserService $userService)
+    {
+        $userService->update($request, $user);
+        \Notification::add('success', 'User "'.$user->name.'" updated');
+        return \Redirect::route('admin.user.index');
     }
 
     /**

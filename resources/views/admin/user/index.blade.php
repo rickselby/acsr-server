@@ -21,6 +21,7 @@
     <table class="table table-striped table-hover table-condensed">
         <tr>
             <th>User</th>
+            <th></th>
             <th>New?</th>
             <th class="text-center">On Server?</th>
             @foreach(\AuthProviders::required() as $provider)
@@ -34,6 +35,11 @@
         @foreach($users AS $user)
             <tr>
                 <th>{{ $user->name }}</th>
+                <th>
+                    <span class="badge driver-number">
+                        {{ $user->number ?: '???' }}
+                    </span>
+                </th>
 
                 @if ($user->new)
                     <td class="info text-center">New</td>
