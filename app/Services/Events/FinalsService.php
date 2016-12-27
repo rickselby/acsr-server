@@ -64,20 +64,39 @@ class FinalsService
             // Get the next grid slot of the race being added to
             $nextGrid = $nextRace->entrants->count() + 1;
 
+            // Prepare the announcement
+            $announcement = $nextRace->name.': ';
+
             $users = [];
             for ($i = 0; $i < $race->event->advance_per_final; $i++) {
                 // Create a new entrant for the next race
                 $entrant = new RaceEntrant();
-                $entrant->grid = $nextGrid++;
+                $entrant->grid = $nextGrid;
                 $entrant->user()->associate($results[$i]->user);
                 $nextRace->entrants()->save($entrant);
 
                 // Make a list of the users
                 $users[] = $results[$i]->user;
+
+                // Populate the announcement
+                $announcement .= ' **'.$nextGrid.'.** ';
+                // Everyone should have discord, but...
+                if ($results[$i]->user->getProvider('discord'))
+                {
+                    $announcement .= '<@'.$results[$i]->user->getProvider('discord')->provider_user_id.'> ';
+                } else {
+                    $announcement .= $results[$i]->user->name.' ';
+                }
+
+                // Increment the grid slot
+                $nextGrid++;
             }
 
             // Reload the entrants, just in case
             $nextRace->load(['entrants']);
+
+            // Send an announcement about the new grid slots
+            $this->voiceService->postAnnoucement($announcement);
 
             // Add these users to the voice group for the next race
             $this->voiceService->addToGroup($nextRace->group_id, $users);
@@ -150,13 +169,28 @@ class FinalsService
         $event->races()->save($race);
         $event->load('races');
 
+        // Prepare the announcement
+        $announcement = $race->name.': ';
+
         // add the entrants, in order
         foreach($entrants AS $key => $user) {
             $entrant = new RaceEntrant();
             $entrant->grid = $key + 1;
             $entrant->user()->associate($user);
             $race->entrants()->save($entrant);
+
+            // Populate the announcement
+            $announcement .= ' **'.($key + 1).'.** ';
+            if ($user->getProvider('discord'))
+            {
+                $announcement .= '<@'.$user->getProvider('discord')->provider_user_id.'> ';
+            } else {
+                $announcement .= $user->name.' ';
+            }
         }
+
+        // Send the announcement about the grid
+        $this->voiceService->postAnnoucement($announcement);
     }
 
     /**

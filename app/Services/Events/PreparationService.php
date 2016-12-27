@@ -4,6 +4,7 @@ namespace App\Services\Events;
 
 use App\Contracts\GridsContract;
 use App\Contracts\ServerProviderContract;
+use App\Contracts\VoiceServerContract;
 use App\Models\Event;
 use App\Models\Race;
 use App\Models\RaceEntrant;
@@ -13,14 +14,16 @@ class PreparationService
 {
     /** @var ServerProviderContract */
     protected $serverProviderService;
-
     /** @var GridsContract */
     protected $gridsService;
+    /** @var VoiceServerContract  */
+    protected $voiceService;
 
-    public function __construct(ServerProviderContract $serverProviderService, GridsContract $gridsService)
+    public function __construct(ServerProviderContract $serverProviderService, GridsContract $gridsService, VoiceServerContract $voiceServerContract)
     {
         $this->serverProviderService = $serverProviderService;
         $this->gridsService = $gridsService;
+        $this->voiceService = $voiceServerContract;
     }
 
     /**
@@ -75,6 +78,10 @@ class PreparationService
         }
     }
 
+    /**
+     * Generate the grids for the heats
+     * @param Event $event
+     */
     public function generateGrids(Event $event)
     {
         $this->clearGrids($event);
@@ -92,12 +99,31 @@ class PreparationService
             ]);
             $event->races()->save($race);
 
+            // Show the grid in order
+            ksort($grid['grid']);
+
+            // Prepare the announcement
+            $announcement = $race->name.': ';
+
             foreach($grid['grid'] AS $gridSlot => $user) {
                 $entrant = new RaceEntrant();
                 $entrant->grid = $gridSlot;
                 $entrant->user()->associate($user);
                 $race->entrants()->save($entrant);
+
+                // Populate the announcement
+                $announcement .= ' **'.$gridSlot.'.** ';
+                // Everyone should have discord, but...
+                if ($user->getProvider('discord'))
+                {
+                    $announcement .= '<@'.$user->getProvider('discord')->provider_user_id.'> ';
+                } else {
+                    $announcement .= $user->name.' ';
+                }
             }
+
+            // Send the announcement about the grid
+            $this->voiceService->postAnnoucement($announcement);
         }
     }
 
