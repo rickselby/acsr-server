@@ -325,7 +325,8 @@ class DiscordApi
      */
     public function getMembers($guildID)
     {
-        return $this->get('/guilds/'.$guildID.'/members')->body;
+        // TODO: make this check if we have 1000 and send another request...
+        return $this->get('/guilds/'.$guildID.'/members?limit=1000')->body;
     }
 
     /**************************************************************************
