@@ -31,8 +31,10 @@ elixir(mix => {
         ])
         .copy('resources/assets/bower/bootstrap-sass/assets/fonts/bootstrap', 'public/vendor/fonts')
         .copy('resources/assets/bower/font-awesome/fonts', 'public/vendor/fonts')
+        .copy('resources/images', 'public/images')
         .version([
             'css/all.css',
             'js/all.js',
+            'public/images',
         ]);
 });

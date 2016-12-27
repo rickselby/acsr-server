@@ -7,7 +7,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <title>Assetto Corsa Sprint Racing</title>
 
-    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}" />
+    <link rel="icon" type="image/png" href="{{ asset('images/icon.png') }}" />
 
     <link rel="stylesheet" href="{{ url(elixir('css/all.css')) }}" />
     @stack('stylesheets')
