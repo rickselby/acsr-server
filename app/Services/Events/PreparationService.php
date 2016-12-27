@@ -102,6 +102,7 @@ class PreparationService
             // Show the grid in order
             ksort($grid['grid']);
 
+            // Prepare the announcement
             $announcement = $race->name.': ';
 
             foreach($grid['grid'] AS $gridSlot => $user) {
@@ -109,6 +110,8 @@ class PreparationService
                 $entrant->grid = $gridSlot;
                 $entrant->user()->associate($user);
                 $race->entrants()->save($entrant);
+
+                // Populate the announcement
                 $announcement .= ' **'.$gridSlot.'.** ';
                 // Everyone should have discord, but...
                 if ($user->getProvider('discord'))
@@ -119,7 +122,7 @@ class PreparationService
                 }
             }
 
-            // Send a notification about the grid
+            // Send the announcement about the grid
             $this->voiceService->postAnnoucement($announcement);
         }
     }
