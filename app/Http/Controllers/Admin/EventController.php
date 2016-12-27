@@ -36,7 +36,7 @@ class EventController extends Controller
     public function index()
     {
         return view('admin.event.index')
-            ->with('events', Event::all());
+            ->with('events', Event::orderBy('start')->get());
     }
 
     /**
