@@ -61,6 +61,9 @@
                     @if ($user->getProvider($provider))
                         <td class="success text-center">
                             <span class="fa fa-check" style="color: green"></span>
+                            @if ($user->new)
+                                <em>({{ $user->getProvider($provider)->name }})</em>
+                            @endif
                         </td>
                     @else
                         <td class="danger text-center">
