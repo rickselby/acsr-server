@@ -32,3 +32,10 @@ $fa-font-path: "../../vendor/fonts";
   margin-left: 0.2em;
   margin-right: 0.2em;
 }
+
+/**
+ * Fix logo area
+ */
+.navbar-brand {
+  padding: 5px 10px;
+}

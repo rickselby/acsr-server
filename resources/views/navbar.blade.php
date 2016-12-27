@@ -9,7 +9,7 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="navbar-brand" href="{{ route('home') }}">
-                ACSR
+                <img src="{{ elixir('images/logo.png') }}" style="height: 40px" />
             </a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
@@ -59,7 +59,7 @@
                         <p class="navbar-btn">
                             <a href="{{ env('DISCORD_GUILD_INVITE') }}" class="btn btn-social btn-discord btn-default">
                                 <span class="fa">
-                                    <img src="/img/discord.svg" style="width: 27px; margin-top: 4px" />
+                                    <img src="{{ elixir('images/discord.svg') }}" style="width: 27px; margin-top: 4px" />
                                 </span>
                                 Join the Discord Server
                             </a>
@@ -70,9 +70,11 @@
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                             {{ \Auth::user()->name }}
-                            <span class="badge driver-number">
-                                {{ \Auth::user()->number ?: '???' }}
-                            </span>
+                            @if (\Auth::user()->number)
+                                <span class="badge driver-number">
+                                    {{ \Auth::user()->number }}
+                                </span>
+                            @endif
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
