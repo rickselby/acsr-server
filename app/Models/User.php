@@ -62,7 +62,7 @@ class User extends Authenticatable
 
     public function adminEvents()
     {
-        return $this->belongsToMany(Event::class, 'event_admins');
+        return $this->belongsToMany(Event::class, 'event_admins')->orderBy('start');
     }
 
     public function events()

@@ -70,7 +70,7 @@ class EventService
      */
     public function openEvents()
     {
-        $events = Event::whereNull('started')->get();
+        $events = Event::whereNull('started')->orderBy('start')->get();
 
         foreach ($events AS $event) {
             // If there is a user logged in, add whether they are signed up or not
@@ -93,7 +93,7 @@ class EventService
      */
     public function pastEvents()
     {
-        return Event::whereNotNull('started')->get();
+        return Event::whereNotNull('started')->orderBy('start', 'desc')->get();
     }
 
     /**
