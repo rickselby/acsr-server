@@ -47,23 +47,27 @@ class BasicConfigFile implements ConfigFileContract
 
     /**
      * Get an entry list for the given drivers
-     * @param array $drivers
+     *
+     * @param string $carModel
+     * @param array $drivers Keyed by grid slot
+     *
      * @return string
      */
     public function getEntryList($carModel, array $drivers)
     {
         $entryList = [];
 
-        $count = 0;
-        foreach($drivers AS $driver) {
-            $entryList[] = '[CAR_'.$count++.']';
+        for($i = 1; $i <= max(array_keys($drivers)); $i++) {
+            $driver = $drivers[$i] ?? null;
+
+            $entryList[] = '[CAR_'.($i-1).']';
             $entryList[] = 'MODEL='.$carModel;
-            $entryList[] = 'SKIN='.$driver->skin;
+            $entryList[] = 'SKIN='.($driver ? $driver->skin : '');
             $entryList[] = 'SPECTATOR_MODE=0';
-            $entryList[] = 'DRIVERNAME='.$driver->user->name;
+            $entryList[] = 'DRIVERNAME='.($driver ? $driver->user->name : 'blank');
             $entryList[] = 'TEAM=';
-            $entryList[] = 'GUID='.$driver->user->getProvider('steam')->provider_user_id;
-            $entryList[] = 'BALLAST='.($driver->ballast ?: '0');
+            $entryList[] = 'GUID='.($driver ? $driver->user->getProvider('steam')->provider_user_id : '');
+            $entryList[] = 'BALLAST='.($driver ? ($driver->ballast ?: '0') : '0');
             $entryList[] = '';
         }
 

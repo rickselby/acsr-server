@@ -91,7 +91,7 @@ class RaceService
         // Get the entry list
         $entryList = $this->configService->getEntryList(
             $race->event->car_model,
-            $race->entrants()->grid()->get()->all()
+            $race->entrants()->grid()->get()->keyBy('grid')->all()
         );
 
         // Pass the settings to the server
