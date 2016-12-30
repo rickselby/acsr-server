@@ -5,6 +5,8 @@ namespace App\Services\VoiceServer\Discord;
 use Httpful\Mime;
 use Httpful\Request;
 use Httpful\Response;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 
 /**
  * A simple REST API interface for some discord functionality that we need.
@@ -16,6 +18,12 @@ use Httpful\Response;
 class DiscordApi
 {
     const BASE_URL = 'https://discordapp.com/api';
+
+    /** @var array A list of rate limited URLs and their details */
+    private $rateLimited = [];
+
+    /** @var Logger */
+    private $log;
 
     /**
      * DiscordApi constructor.
@@ -30,6 +38,9 @@ class DiscordApi
         $template = Request::init()
             ->addHeader('Authorization', 'Bot '.env('DISCORD_BOT_KEY'));
         Request::ini($template);
+
+        $this->log = new Logger('discord_api');
+        $this->log->pushHandler(new StreamHandler(storage_path('logs/discord.log')));
     }
 
     /**
@@ -130,7 +141,8 @@ class DiscordApi
                 'color' => $color,
                 'hoist' => $hoist,
                 'mentionable' => $mentionable
-            ])
+            ]),
+            '/guilds/'.$guildID.'/roles'
         );
         return $role->body;
     }
@@ -145,7 +157,7 @@ class DiscordApi
      */
     public function deleteRole($guildID, $roleID)
     {
-        $role = $this->delete('/guilds/'.$guildID.'/roles/'.$roleID);
+        $role = $this->delete('/guilds/'.$guildID.'/roles/'.$roleID, '/guilds/'.$guildID.'/roles');
         return $role->body;
     }
 
@@ -159,7 +171,7 @@ class DiscordApi
      */
     public function getMember($guildID, $userID)
     {
-        return $this->get('/guilds/'.$guildID.'/members/'.$userID)->body;
+        return $this->get('/guilds/'.$guildID.'/members/'.$userID, '/guilds/'.$guildID.'/members')->body;
     }
 
     /**
@@ -178,7 +190,7 @@ class DiscordApi
         // Set the roles
         $this->patch('/guilds/'.$guildID.'/members/'.$userID, [
             'roles' => array_unique($roles)
-        ]);
+        ], '/guilds/'.$guildID.'/members');
     }
 
     /**
@@ -254,7 +266,7 @@ class DiscordApi
             'type' => 'role',
             'allow' => DiscordPermissions::CONNECT,
             'deny' => 0,
-        ]);
+        ], '/channels/'.$channelID.'/permissions');
     }
 
     /**
@@ -269,7 +281,7 @@ class DiscordApi
             'type' => 'role',
             'deny' => DiscordPermissions::CONNECT,
             'allow' => 0,
-        ]);
+        ], '/channels/'.$channelID.'/permissions');
     }
 
     /**
@@ -326,7 +338,7 @@ class DiscordApi
     public function getMembers($guildID)
     {
         // TODO: make this check if we have 1000 and send another request...
-        return $this->get('/guilds/'.$guildID.'/members?limit=1000')->body;
+        return $this->get('/guilds/'.$guildID.'/members?limit=1000', '/guilds/'.$guildID.'/members')->body;
     }
 
     /**************************************************************************
@@ -340,11 +352,12 @@ class DiscordApi
      *
      * @return Response
      */
-    private function delete($url)
+    private function delete($url, $rate_uri = null)
     {
         return $this->send(
             Request::delete(self::BASE_URL.$url),
-            []
+            [],
+            $rate_uri
         );
     }
 
@@ -355,11 +368,12 @@ class DiscordApi
      *
      * @return Response
      */
-    private function get($url)
+    private function get($url, $rate_uri = null)
     {
         return $this->send(
             Request::get(self::BASE_URL.$url),
-            []
+            [],
+            $rate_uri
         );
     }
 
@@ -371,11 +385,12 @@ class DiscordApi
      *
      * @return Response
      */
-    private function patch($url, $body)
+    private function patch($url, $body, $rate_uri = null)
     {
         return $this->send(
             Request::patch(self::BASE_URL.$url),
-            $body
+            $body,
+            $rate_uri
         );
     }
 
@@ -387,11 +402,12 @@ class DiscordApi
      *
      * @return Response
      */
-    private function post($url, $body)
+    private function post($url, $body, $rate_uri = null)
     {
         return $this->send(
             Request::post(self::BASE_URL.$url),
-            $body
+            $body,
+            $rate_uri
         );
     }
 
@@ -403,11 +419,12 @@ class DiscordApi
      *
      * @return Response
      */
-    private function put($url, $body)
+    private function put($url, $body, $rate_uri = null)
     {
         return $this->send(
             Request::put(self::BASE_URL.$url),
-            $body
+            $body,
+            $rate_uri
         );
     }
 
@@ -419,16 +436,72 @@ class DiscordApi
      *
      * @return Response
      */
-    private function send(Request $request, $body)
+    private function send(Request $request, $body, $rate_uri)
     {
+        $this->log->info('Send', [
+            'method' => $request->method,
+            'uri' => $request->uri
+        ]);
+
         if (count($body)) {
             $request->sendsType(Mime::JSON)
                 ->body(json_encode($body));
         }
 
+        $request->rate_uri = $rate_uri;
+
         return $this->checkForErrors(
-            $request->send()
+            $this->rateLimit(
+                $request
+            )
         );
+    }
+
+    /**
+     * Send the request, but take into account rate limiting
+     *
+     * @param $request
+     *
+     * @return mixed
+     */
+    private function rateLimit($request)
+    {
+        /**
+         * Adding the method to the URI for a unique rate limit is not quite right. See
+         * https://github.com/hammerandchisel/discord-api-docs/issues/190 for updates.
+         */
+        $rateURI = $request->method.($request->rate_uri ?? $request->uri);
+        // Check if we need to wait before sending this request
+        if (isset($this->rateLimited[$rateURI])) {
+            // might have to wait here?
+            if ($this->rateLimited[$rateURI]['remaining'] == 0) {
+                // yes, we need to wait
+                $time = $this->rateLimited[$rateURI]['reset'] - time();
+                if ($time > 0) {
+                    $this->log->info('Rate Limited', [
+                        'uri' => $rateURI,
+                        'time' => $time,
+                    ]);
+                    sleep($time);
+                }
+            }
+        }
+        // Send the request!
+        $response = $request->send();
+        // Check if we need to update the rate limiting stuff
+        if ($response->headers->offsetExists('x-ratelimit-reset')) {
+            $this->rateLimited[$rateURI] = [
+                'remaining' => $response->headers->offsetGet('x-ratelimit-remaining'),
+                'reset' => $response->headers->offsetGet('x-ratelimit-reset'),
+            ];
+            $this->log->info('Got Limit', [
+                'uri' => $rateURI,
+                'remaining' => $response->headers->offsetGet('x-ratelimit-remaining'),
+                'reset' => $response->headers->offsetGet('x-ratelimit-reset'),
+                'time' => $response->headers->offsetGet('x-ratelimit-reset') - time(),
+            ]);
+        }
+        return $response;
     }
 
     /**
@@ -446,7 +519,6 @@ class DiscordApi
             case '401':
                 throw new \Exception('Discord: Unauthorized');
             case '403':
-                dd($response);
                 throw new \Exception('Discord: Permission Denied');
             case '404':
                 throw new \Exception('Discord: 404 Not Found');

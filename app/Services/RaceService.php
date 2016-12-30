@@ -35,6 +35,8 @@ class RaceService
      * @param $ip
      * @param $results
      *
+     * @return Race
+     *
      * @throws \Exception
      */
     public function setResults($ip, $results)

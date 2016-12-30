@@ -66,3 +66,11 @@ Route::post('event/{event}/cancel', 'EventController@cancelSignup')->name('event
 Route::get('/user/logins', 'UserController@logins')->name('user.logins');
 Route::get('/user/settings', 'UserController@settings')->name('user.settings');
 Route::post('/user/settings', 'UserController@updateSettings')->name('user.update-settings');
+
+
+Route::get('test', function(\App\Contracts\VoiceServerContract $voiceServerContract) {
+    for ($i=0; $i<20; $i++) {
+        $voiceServerContract->addToGroup(152030038320087040, [\App\Models\User::find(8)]);
+#        $voiceServerContract->postLog('testing...');
+    }
+});
