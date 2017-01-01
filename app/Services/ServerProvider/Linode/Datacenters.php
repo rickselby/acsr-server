@@ -50,7 +50,7 @@ class Datacenters
         }
 
         // Count which datacenters are in use for this event
-        foreach(Server::forEvent($eventID) AS $server) {
+        foreach(Server::forEvent($eventID)->get() AS $server) {
             $datacenters[$server['settings']['datacenter_id']]++;
         }
 
