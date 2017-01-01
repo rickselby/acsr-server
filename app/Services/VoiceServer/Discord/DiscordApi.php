@@ -69,7 +69,7 @@ class DiscordApi
 
         $response = $this->discordRequest->send(
             Request::post(self::BASE_URL.'/guilds/'.$guildID.'/roles'),
-            'POST/guilds/'.$guildID.'/roles'
+            'UPDATE/guilds/'.$guildID.'/roles'
         );
 
         // Insert the new role ID bottom-last
@@ -117,7 +117,7 @@ class DiscordApi
             Request::patch(self::BASE_URL.'/guilds/'.$guildID.'/roles')
                 ->sendsType(Mime::JSON)
                 ->body(json_encode($rolePositions)),
-            'POST/guilds/'.$guildID.'/roles'
+            'UPDATE/guilds/'.$guildID.'/roles'
         );
     }
 
@@ -148,7 +148,7 @@ class DiscordApi
                     'hoist' => $hoist,
                     'mentionable' => $mentionable
                 ]))),
-            'POST/guilds/'.$guildID.'/roles'
+            'UPDATE/guilds/'.$guildID.'/roles'
         )->body;
     }
 
@@ -164,7 +164,7 @@ class DiscordApi
     {
         return $this->discordRequest->send(
             Request::delete(self::BASE_URL.'/guilds/'.$guildID.'/roles/'.$roleID),
-            'POST/guilds/'.$guildID.'/roles'
+            'UPDATE/guilds/'.$guildID.'/roles'
         )->body;
     }
 
@@ -193,16 +193,10 @@ class DiscordApi
      */
     public function addMemberToRole($guildID, $userID, $roleID)
     {
-        // Get the users' current roles
-        $roles = $this->getMember($guildID, $userID)->roles;
-        // Add the new role
-        $roles[] = $roleID;
-        // Set the roles
+        // PUT/DELETE /guilds/<guild_id>/members/<user_id>/roles/<role_id>
         $this->discordRequest->send(
-            Request::patch(self::BASE_URL.'/guilds/'.$guildID.'/members/'.$userID)
-                ->sendsType(Mime::JSON)
-                ->body(json_encode(['roles' => array_unique($roles)])),
-            'POST/guilds/'.$guildID.'/members'
+            Request::put(self::BASE_URL.'/guilds/'.$guildID.'/members/'.$userID.'/roles/'.$roleID),
+            'UPDATE/guilds/'.$guildID.'/members'
         );
     }
 
@@ -322,7 +316,7 @@ class DiscordApi
             Request::put(self::BASE_URL.'/channels/'.$channelID.'/permissions/'.$roleID)
                 ->sendsType(Mime::JSON)
                 ->body(json_encode($body)),
-            'POST/channels/'.$channelID.'/permissions'
+            'UPDATE/channels/'.$channelID.'/permissions'
         );
     }
 
@@ -344,7 +338,7 @@ class DiscordApi
                     'name' => $name,
                     'type' => $type
                 ])),
-            'POST/guilds/'.$guildID.'/channels'
+            'UPDATE/guilds/'.$guildID.'/channels'
         )->body;
     }
 
@@ -359,7 +353,7 @@ class DiscordApi
     {
         return $this->discordRequest->send(
             Request::delete(self::BASE_URL.'/channels/'.$channelID),
-            'POST/channels/'.$channelID
+            'UPDATE/channels/'.$channelID
         )->body;
     }
 
@@ -379,7 +373,7 @@ class DiscordApi
                 ->body(json_encode([
                     'content' => $message
                 ])),
-            'POST/channels/'.$channelID.'/messages'
+            'UPDATE/channels/'.$channelID.'/messages'
         )->body;
     }
 
