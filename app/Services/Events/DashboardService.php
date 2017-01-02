@@ -127,6 +127,9 @@ class DashboardService
      */
     public function startNextSession(Event $event)
     {
+        // Make sure we have the latest versions of the races
+        $event->load(['races']);
+
         $session = $this->getNextSession($event);
 
         // Check we should be starting this session
@@ -170,9 +173,11 @@ class DashboardService
     protected function shouldSessionBeRun(Event $event, $session)
     {
         $races = $event->races->where('session', $session);
+        $this->voiceService->postLog('Checking session '.$session);
 
         // Races must exist to run a session!
         if (!$races->count()) {
+            $this->voiceService->postLog('No races for this session');
             return false;
         }
 
@@ -180,6 +185,7 @@ class DashboardService
         // (but incomplete)
         foreach($races AS $race) {
             if ($race->active || $race->complete) {
+                $this->voiceService->postLog('"'.$race->name.'" is active or complete');
                 return false;
             }
         }

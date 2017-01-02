@@ -174,6 +174,8 @@ class ClientAPI
      */
     private function send(Request $request, $body = [])
     {
+        // Don't wait too long for the response...
+        $request->timeoutIn(2);
         if (count($body)) {
             $request->sendsType(Mime::JSON)
                 ->body(json_encode($body));
