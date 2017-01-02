@@ -4,6 +4,7 @@ namespace App\Services\Events;
 
 use App\Models\Event;
 use App\Services\PointsSequenceService;
+use Illuminate\Support\Collection;
 
 class StandingsService
 {
@@ -34,12 +35,12 @@ class StandingsService
                     $entrants[$entrant->user->id] = [
                         'user' => $entrant->user,
                         'points' => 0,
-                        'positions' => [],
+                        'positions' => new Collection(),
                         'fastestLap' => PHP_INT_MAX,
                     ];
                 }
 
-                $entrants[$entrant->user->id]['positions'][] = $entrant->position;
+                $entrants[$entrant->user->id]['positions']->push($entrant->position);
                 $entrants[$entrant->user->id]['points'] += $pointsSequence[$entrant->position] ?? 0;
                 $entrants[$entrant->user->id]['fastestLap'] = min($entrants[$entrant->user->id]['fastestLap'], $entrant->fastest_lap);
             }
@@ -67,11 +68,9 @@ class StandingsService
 
         // Then, best finishing positions; all the way down...
         $positions = [
-            'a' => array_values($a['positions']),
-            'b' => array_values($b['positions']),
+            'a' => $a['positions']->sort()->all(),
+            'b' => $b['positions']->sort()->all(),
         ];
-        sort($positions['a']);
-        sort($positions['b']);
 
         for($i = 0; $i < max(count($positions['a']), count($positions['b'])); $i++) {
             // Check both have a position set

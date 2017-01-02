@@ -61,6 +61,7 @@ Route::get('race/{race}/json', 'RaceController@json')->name('race.json');
 
 // User events
 Route::get('event', 'EventController@index')->name('event.index');
+Route::get('event/{event}', 'EventController@show')->name('event.show');
 Route::post('event/{event}/signup', 'EventController@signup')->name('event.signup');
 Route::post('event/{event}/cancel', 'EventController@cancelSignup')->name('event.signup.cancel');
 
