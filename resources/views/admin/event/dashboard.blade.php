@@ -28,6 +28,10 @@
         @include('admin.event.dashboard.start-heats')
     @endif
 
+    @if ($sections['run-next-session'])
+        @include('admin.event.dashboard.run-next-session')
+    @endif
+
     @if ($sections['heat-standings'])
         @include('admin.event.dashboard.heat-standings')
     @endif
