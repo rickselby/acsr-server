@@ -58,6 +58,11 @@ class DashboardService
             // Show heat standings once we're up and running
             'heat-standings' => $event->started,
             'start-finals' => $this->canStartFinals($event),
+            'run-next-session' => (
+                    $event->started
+                &&  $this->shouldSessionBeRun($event, $this->getNextSession($event))
+                &&  !$this->canStartFinals($event)
+            ),
         ];
     }
 
@@ -127,11 +132,14 @@ class DashboardService
      */
     public function startNextSession(Event $event)
     {
+        // Make sure we have the latest versions of the races
+        $event->load(['races']);
+
         $session = $this->getNextSession($event);
 
         // Check we should be starting this session
         // The above could return a part-complete session
-        if ($this->shouldSessionBeRun($event, $session)) {
+        if ($this->shouldSessionBeRun($event, $session, true)) {
             $this->voiceService->postLog('Starting races for session '.$session);
 
             $races = $event->races->where('session', $session);
@@ -167,12 +175,18 @@ class DashboardService
      *
      * @return bool
      */
-    protected function shouldSessionBeRun(Event $event, $session)
+    protected function shouldSessionBeRun(Event $event, $session, $log = false)
     {
         $races = $event->races->where('session', $session);
+        if ($log) {
+            $this->voiceService->postLog('Checking session ' . $session);
+        }
 
         // Races must exist to run a session!
         if (!$races->count()) {
+            if ($log) {
+                $this->voiceService->postLog('No races for this session');
+            }
             return false;
         }
 
@@ -180,6 +194,9 @@ class DashboardService
         // (but incomplete)
         foreach($races AS $race) {
             if ($race->active || $race->complete) {
+                if ($log) {
+                    $this->voiceService->postLog('"' . $race->name . '" is active or complete');
+                }
                 return false;
             }
         }

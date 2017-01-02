@@ -53,6 +53,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
     Route::delete('event/{event}/dashboard/signup/{user}', 'EventDashboardController@destroySignup')->name('event.dashboard.signup.destroy');
     Route::post('event/{event}/dashboard/grids', 'EventDashboardController@grids')->name('event.dashboard.grids');
     Route::post('event/{event}/dashboard/start-heats', 'EventDashboardController@startHeats')->name('event.dashboard.start-heats');
+    Route::post('event/{event}/dashboard/run-next-session', 'EventDashboardController@runNextSession')->name('event.dashboard.run-next-session');
     Route::post('event/{event}/dashboard/start-finals', 'EventDashboardController@startFinals')->name('event.dashboard.start-finals');
 });
 

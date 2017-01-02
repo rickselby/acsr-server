@@ -73,6 +73,12 @@ class EventDashboardController extends Controller
         return \Redirect::route('admin.event.dashboard', $event);
     }
 
+    public function runNextSession(Event $event)
+    {
+        $this->dashboardService->startNextSession($event);
+        return \Redirect::route('admin.event.dashboard', $event);
+    }
+
     public function startFinals(Event $event)
     {
         $this->finalsService->initialise($event);

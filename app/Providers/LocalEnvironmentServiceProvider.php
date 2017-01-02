@@ -39,7 +39,7 @@ class LocalEnvironmentServiceProvider extends ServiceProvider
 
             \Route::group(['middleware' => ['web']], function () {
                 \Route::get('/login/dev', function () {
-                    \Auth::loginUsingID(8);
+                    \Auth::loginUsingID(1);
                     return \Redirect::to('/');
                 });
             });

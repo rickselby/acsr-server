@@ -167,7 +167,7 @@ class FinalsService
             'session' => $nextSession,
         ]);
         $event->races()->save($race);
-        $event->load('races');
+        $event->load(['races']);
 
         // Prepare the announcement
         $announcement = $race->name.': ';
