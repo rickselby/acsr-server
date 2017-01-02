@@ -55,7 +55,7 @@ class Event extends \Eloquent
 
     public function races()
     {
-        return $this->hasMany(Race::class);
+        return $this->hasMany(Race::class)->orderBy('session')->orderBy('name');
     }
 
     public function signups()

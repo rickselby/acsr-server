@@ -72,7 +72,9 @@
             <li class="list-group-item container-fluid">
                 <div class="row">
                     <div class="col-sm-4">
-                        {{ $event->name }}
+                        <a href="{{ route('event.show', $event) }}">
+                            {{ $event->name }}
+                        </a>
                     </div>
                     <div class="col-sm-4">
                         {{ \Times::toUserTimezone($event->start) }}

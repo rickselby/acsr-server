@@ -3,15 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
-use App\Services\Events\HeatsService;
+use App\Services\Events\StandingsService;
 use App\Services\EventService;
-use Illuminate\Http\Request;
 
 class EventController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth', ['except' => 'index']);
+        $this->middleware('auth', ['except' => ['index', 'show']]);
     }
 
     /**
@@ -19,13 +18,28 @@ class EventController extends Controller
      *
      * @param EventService $eventService
      *
-     * @return $this
+     * @return \Illuminate\View\View
      */
     public function index(EventService $eventService)
     {
         return view('event.index')
             ->with('open', $eventService->openEvents())
             ->with('past', $eventService->pastEvents());
+    }
+
+    /**
+     * Show results for an event
+     *
+     * @param Event $event
+     * @param StandingsService $standingsService
+     *
+     * @return \Illuminate\View\View
+     */
+    public function show(Event $event, StandingsService $standingsService)
+    {
+        return view('event.show')
+            ->with('event', $event)
+            ->with('heatStandings', $standingsService->heatStandings($event));
     }
 
     /**

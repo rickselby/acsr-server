@@ -34,4 +34,9 @@ class Race extends \Eloquent
         return $this->hasMany(RaceEntrant::class);
     }
 
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'race_entrants');
+    }
+
 }
