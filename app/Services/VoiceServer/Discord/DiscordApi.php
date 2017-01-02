@@ -17,11 +17,14 @@ class DiscordApi
 {
     const BASE_URL = 'https://discordapp.com/api';
 
+    /** @var DiscordRequest */
+    protected $discordRequest;
+
     /**
      * DiscordApi constructor.
      * Ensure the BOT_KEY is set and
      */
-    public function __construct()
+    public function __construct(DiscordRequest $discordRequest)
     {
         if (!env('DISCORD_BOT_KEY')) {
             throw new \Exception('Please set DISCORD_BOT_KEY before using Discord');
@@ -30,6 +33,8 @@ class DiscordApi
         $template = Request::init()
             ->addHeader('Authorization', 'Bot '.env('DISCORD_BOT_KEY'));
         Request::ini($template);
+
+        $this->discordRequest = $discordRequest;
     }
 
     /**
@@ -62,14 +67,17 @@ class DiscordApi
         // Then unset the 'old' first element, leaving a space for the new role
         $roleList[1] = [];
 
-        $role = $this->post('/guilds/'.$guildID.'/roles', []);
+        $response = $this->discordRequest->send(
+            Request::post(self::BASE_URL.'/guilds/'.$guildID.'/roles'),
+            'UPDATE/guilds/'.$guildID.'/roles'
+        );
 
         // Insert the new role ID bottom-last
-        $roleList[1] = $role->body->id;
+        $roleList[1] = $response->body->id;
 
         $this->updateRolePositions($guildID, $roleList);
 
-        return $this->updateRole($guildID, $role->body->id, $name, $permissions, $position, $color, $hoist, $mentionable);
+        return $this->updateRole($guildID, $response->body->id, $name, $permissions, $position, $color, $hoist, $mentionable);
     }
 
     /**
@@ -79,7 +87,10 @@ class DiscordApi
      */
     public function getRoles($guildID)
     {
-        return $this->get('/guilds/'.$guildID.'/roles')->body;
+        return $this->discordRequest->send(
+            Request::get(self::BASE_URL.'/guilds/'.$guildID.'/roles'),
+            'GET/guilds/'.$guildID.'/roles'
+        )->body;
     }
 
     /**
@@ -102,7 +113,12 @@ class DiscordApi
             ];
         }
 
-        return $this->patch('/guilds/'.$guildID.'/roles', $rolePositions);
+        return $this->discordRequest->send(
+            Request::patch(self::BASE_URL.'/guilds/'.$guildID.'/roles')
+                ->sendsType(Mime::JSON)
+                ->body(json_encode($rolePositions)),
+            'UPDATE/guilds/'.$guildID.'/roles'
+        );
     }
 
     /**
@@ -121,18 +137,19 @@ class DiscordApi
      */
     public function updateRole($guildID, $roleID, $name = null, $permissions = null, $position = null, $color = null, $hoist = null, $mentionable = null)
     {
-        $role = $this->patch(
-            '/guilds/'.$guildID.'/roles/'.$roleID,
-            $this->removeNulls([
-                'name' => $name,
-                'permissions' => $permissions,
-                'position' => $position,
-                'color' => $color,
-                'hoist' => $hoist,
-                'mentionable' => $mentionable
-            ])
-        );
-        return $role->body;
+        return $this->discordRequest->send(
+            Request::patch(self::BASE_URL.'/guilds/'.$guildID.'/roles/'.$roleID)
+                ->sendsType(Mime::JSON)
+                ->body(json_encode($this->removeNulls([
+                    'name' => $name,
+                    'permissions' => $permissions,
+                    'position' => $position,
+                    'color' => $color,
+                    'hoist' => $hoist,
+                    'mentionable' => $mentionable
+                ]))),
+            'UPDATE/guilds/'.$guildID.'/roles'
+        )->body;
     }
 
     /**
@@ -145,8 +162,10 @@ class DiscordApi
      */
     public function deleteRole($guildID, $roleID)
     {
-        $role = $this->delete('/guilds/'.$guildID.'/roles/'.$roleID);
-        return $role->body;
+        return $this->discordRequest->send(
+            Request::delete(self::BASE_URL.'/guilds/'.$guildID.'/roles/'.$roleID),
+            'UPDATE/guilds/'.$guildID.'/roles'
+        )->body;
     }
 
     /**
@@ -159,7 +178,10 @@ class DiscordApi
      */
     public function getMember($guildID, $userID)
     {
-        return $this->get('/guilds/'.$guildID.'/members/'.$userID)->body;
+        return $this->discordRequest->send(
+            Request::get(self::BASE_URL.'/guilds/'.$guildID.'/members/'.$userID),
+            'GET/guilds/'.$guildID.'/members'
+        )->body;
     }
 
     /**
@@ -171,29 +193,33 @@ class DiscordApi
      */
     public function addMemberToRole($guildID, $userID, $roleID)
     {
-        // Get the users' current roles
-        $roles = $this->getMember($guildID, $userID)->roles;
-        // Add the new role
-        $roles[] = $roleID;
-        // Set the roles
-        $this->patch('/guilds/'.$guildID.'/members/'.$userID, [
-            'roles' => array_unique($roles)
-        ]);
+        // PUT/DELETE /guilds/<guild_id>/members/<user_id>/roles/<role_id>
+        $this->discordRequest->send(
+            Request::put(self::BASE_URL.'/guilds/'.$guildID.'/members/'.$userID.'/roles/'.$roleID),
+            'UPDATE/guilds/'.$guildID.'/members'
+        );
     }
 
     /**
      * Get the role ID for the @everyone group
+     *
      * @param int $guildID
+     *
      * @return int|null
      */
     public function getEveryoneRoleID($guildID)
     {
-        $roles = $this->get('/guilds/'.$guildID.'/roles');
+        $roles = $this->discordRequest->send(
+            Request::get(self::BASE_URL.'/guilds/'.$guildID.'/roles'),
+            'GET/guilds/'.$guildID.'/roles'
+        );
+
         foreach($roles->body AS $role) {
             if ($role->name == '@everyone') {
                 return $role->id;
             }
         }
+
         return null;
     }
 
@@ -207,12 +233,17 @@ class DiscordApi
      */
     public function findChannel($guildID, $name)
     {
-        $channels = $this->get('/guilds/'.$guildID.'/channels');
+        $channels = $this->discordRequest->send(
+            Request::get(self::BASE_URL.'/guilds/'.$guildID.'/channels'),
+            'GET/guilds/'.$guildID.'/channels'
+        );
+
         foreach($channels->body AS $channel) {
             if ($channel->name == strtolower($name)) {
                 return $channel->id;
             }
         }
+
         return null;
     }
 
@@ -250,7 +281,7 @@ class DiscordApi
      */
     public function assignRoleToVoiceChannel($channelID, $roleID)
     {
-        $this->put('/channels/'.$channelID.'/permissions/'.$roleID, [
+        $this->updateRoleVoiceChannel($channelID, $roleID, [
             'type' => 'role',
             'allow' => DiscordPermissions::CONNECT,
             'deny' => 0,
@@ -265,11 +296,28 @@ class DiscordApi
      */
     public function denyRoleFromVoiceChannel($channelID, $roleID)
     {
-        $this->put('/channels/'.$channelID.'/permissions/'.$roleID, [
+        $this->updateRoleVoiceChannel($channelID, $roleID, [
             'type' => 'role',
             'deny' => DiscordPermissions::CONNECT,
             'allow' => 0,
         ]);
+    }
+
+    /**
+     * Update permissions for a role on a voice channel
+     *
+     * @param $channelID
+     * @param $roleID
+     * @param $body
+     */
+    private function updateRoleVoiceChannel($channelID, $roleID, $body)
+    {
+        $this->discordRequest->send(
+            Request::put(self::BASE_URL.'/channels/'.$channelID.'/permissions/'.$roleID)
+                ->sendsType(Mime::JSON)
+                ->body(json_encode($body)),
+            'UPDATE/channels/'.$channelID.'/permissions'
+        );
     }
 
     /**
@@ -283,10 +331,15 @@ class DiscordApi
      */
     private function createChannel($guildID, $name, $type)
     {
-        return $this->post('/guilds/'.$guildID.'/channels', [
-            'name' => $name,
-            'type' => $type
-        ])->body;
+        return $this->discordRequest->send(
+            Request::post(self::BASE_URL.'/guilds/'.$guildID.'/channels')
+                ->sendsType(Mime::JSON)
+                ->body(json_encode([
+                    'name' => $name,
+                    'type' => $type
+                ])),
+            'UPDATE/guilds/'.$guildID.'/channels'
+        )->body;
     }
 
     /**
@@ -298,7 +351,10 @@ class DiscordApi
      */
     public function deleteChannel($channelID)
     {
-        return $this->delete('/channels/'.$channelID)->body;
+        return $this->discordRequest->send(
+            Request::delete(self::BASE_URL.'/channels/'.$channelID),
+            'UPDATE/channels/'.$channelID
+        )->body;
     }
 
     /**
@@ -311,9 +367,14 @@ class DiscordApi
      */
     public function messageChannel($channelID, $message)
     {
-        return $this->post('/channels/'.$channelID.'/messages', [
-            'content' => $message
-        ])->body;
+        return $this->discordRequest->send(
+            Request::post(self::BASE_URL.'/channels/'.$channelID.'/messages')
+                ->sendsType(Mime::JSON)
+                ->body(json_encode([
+                    'content' => $message
+                ])),
+            'UPDATE/channels/'.$channelID.'/messages'
+        )->body;
     }
 
     /**
@@ -326,138 +387,10 @@ class DiscordApi
     public function getMembers($guildID)
     {
         // TODO: make this check if we have 1000 and send another request...
-        return $this->get('/guilds/'.$guildID.'/members?limit=1000')->body;
-    }
-
-    /**************************************************************************
-     * Private stuff from here
-     *************************************************************************/
-
-    /**
-     * Execute a delete request
-     *
-     * @param string $url
-     *
-     * @return Response
-     */
-    private function delete($url)
-    {
-        return $this->send(
-            Request::delete(self::BASE_URL.$url),
-            []
-        );
-    }
-
-    /**
-     * Execute a get request
-     *
-     * @param string $url
-     *
-     * @return Response
-     */
-    private function get($url)
-    {
-        return $this->send(
-            Request::get(self::BASE_URL.$url),
-            []
-        );
-    }
-
-    /**
-     * Execute a patch request
-     *
-     * @param string $url
-     * @param array $body
-     *
-     * @return Response
-     */
-    private function patch($url, $body)
-    {
-        return $this->send(
-            Request::patch(self::BASE_URL.$url),
-            $body
-        );
-    }
-
-    /**
-     * Execute a post request
-     *
-     * @param string $url
-     * @param array $body
-     *
-     * @return Response
-     */
-    private function post($url, $body)
-    {
-        return $this->send(
-            Request::post(self::BASE_URL.$url),
-            $body
-        );
-    }
-
-    /**
-     * Execute a put request
-     *
-     * @param string $url
-     * @param array $body
-     *
-     * @return Response
-     */
-    private function put($url, $body)
-    {
-        return $this->send(
-            Request::put(self::BASE_URL.$url),
-            $body
-        );
-    }
-
-    /**
-     * Attatch a body to a request and send the request
-     *
-     * @param Request $request
-     * @param array $body
-     *
-     * @return Response
-     */
-    private function send(Request $request, $body)
-    {
-        if (count($body)) {
-            $request->sendsType(Mime::JSON)
-                ->body(json_encode($body));
-        }
-
-        return $this->checkForErrors(
-            $request->send()
-        );
-    }
-
-    /**
-     * Check a request for errors; throw exceptions if halting ones found
-     *
-     * @param Response $response
-     *
-     * @return Response
-     */
-    private function checkForErrors(Response $response)
-    {
-        switch($response->code) {
-            case '400':
-                throw new \Exception('Discord: Bad Request');
-            case '401':
-                throw new \Exception('Discord: Unauthorized');
-            case '403':
-                dd($response);
-                throw new \Exception('Discord: Permission Denied');
-            case '404':
-                throw new \Exception('Discord: 404 Not Found');
-            case '405':
-                throw new \Exception('Discord: Method Not Allowed');
-            case '429':
-                throw new \Exception('Discord: Too Many Requests');
-            default:
-        }
-
-        return $response;
+        return $this->discordRequest->send(
+            Request::get(self::BASE_URL.'/guilds/'.$guildID.'/members?limit=1000'),
+            'GET/guilds/'.$guildID.'/members'
+        )->body;
     }
 
     /**
