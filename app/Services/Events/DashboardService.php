@@ -137,7 +137,7 @@ class DashboardService
             $races = $event->races->where('session', $session);
 
             foreach ($races AS $race) {
-                $this->raceService->startRace($race, $event->laps_per_heat);
+                $this->raceService->startRace($race);
             }
         }
     }

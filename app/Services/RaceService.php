@@ -71,7 +71,7 @@ class RaceService
      *
      * @param Race $race
      */
-    public function startRace(Race $race, $laps)
+    public function startRace(Race $race)
     {
         // Get a random server
         $server = $race->event->servers()->whereNull('race_id')->inRandomOrder()->first();
@@ -85,7 +85,7 @@ class RaceService
         // Get the config file
         $config = $this->configService->alterServerConfig($race->event->config, [
             'SERVER.NAME' => $race->event->name.': '.$race->name,
-            'RACE.LAPS' => $laps
+            'RACE.LAPS' => $race->heat ? $race->event->laps_per_heat : $race->event->laps_per_final,
         ]);
 
         // Get the entry list
