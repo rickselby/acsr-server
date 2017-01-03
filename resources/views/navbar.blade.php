@@ -9,7 +9,7 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="navbar-brand" href="{{ route('home') }}">
-                <img src="{{ elixir('images/logo.png') }}" style="height: 40px" />
+                <img src="{{ url(elixir('images/logo.png')) }}" style="height: 40px" />
             </a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
