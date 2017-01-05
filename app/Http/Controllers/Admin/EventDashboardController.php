@@ -79,6 +79,12 @@ class EventDashboardController extends Controller
         return \Redirect::route('admin.event.dashboard', $event);
     }
 
+    public function progressEvent(Event $event)
+    {
+        $this->dashboardService->progressEvent($event);
+        return \Redirect::route('admin.event.dashboard', $event);
+    }
+
     public function startFinals(Event $event)
     {
         $this->finalsService->initialise($event);
