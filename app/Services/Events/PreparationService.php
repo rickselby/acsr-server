@@ -9,6 +9,8 @@ use App\Models\Event;
 use App\Models\Race;
 use App\Models\RaceEntrant;
 use App\Models\User;
+use App\Services\RaceService;
+use App\Services\UserService;
 
 class PreparationService
 {
@@ -16,14 +18,20 @@ class PreparationService
     protected $serverProviderService;
     /** @var GridsContract */
     protected $gridsService;
-    /** @var VoiceServerContract  */
+    /** @var VoiceServerContract */
     protected $voiceService;
+    /** @var RaceService */
+    protected $raceService;
+    /** @var UserService */
+    protected $userService;
 
-    public function __construct(ServerProviderContract $serverProviderService, GridsContract $gridsService, VoiceServerContract $voiceServerContract)
+    public function __construct(ServerProviderContract $serverProviderService, GridsContract $gridsService, VoiceServerContract $voiceServerContract, RaceService $raceService, UserService $userService)
     {
         $this->serverProviderService = $serverProviderService;
         $this->gridsService = $gridsService;
         $this->voiceService = $voiceServerContract;
+        $this->raceService = $raceService;
+        $this->userService = $userService;
     }
 
     /**
@@ -80,6 +88,7 @@ class PreparationService
 
     /**
      * Generate the grids for the heats
+     *
      * @param Event $event
      */
     public function generateGrids(Event $event)
@@ -102,28 +111,17 @@ class PreparationService
             // Show the grid in order
             ksort($grid['grid']);
 
-            // Prepare the announcement
-            $announcement = $race->name.': ';
-
             foreach($grid['grid'] AS $gridSlot => $user) {
                 $entrant = new RaceEntrant();
                 $entrant->grid = $gridSlot;
                 $entrant->user()->associate($user);
                 $race->entrants()->save($entrant);
-
-                // Populate the announcement
-                $announcement .= ' **'.$gridSlot.'.** ';
-                // Everyone should have discord, but...
-                if ($user->getProvider('discord'))
-                {
-                    $announcement .= '<@'.$user->getProvider('discord')->provider_user_id.'> ';
-                } else {
-                    $announcement .= $user->name.' ';
-                }
             }
 
-            // Send the announcement about the grid
-            $this->voiceService->postAnnoucement($announcement);
+            $race->load(['entrants']);
+
+            $this->raceService->setupVoiceGroup($race);
+            $this->raceService->postGrid($race);
         }
     }
 
@@ -148,6 +146,14 @@ class PreparationService
     protected function clearGrids(Event $event)
     {
         foreach($event->races AS $race) {
+            // Delete anything from the voice server that exists
+            if ($race->group_id) {
+                $this->voiceService->postLog('Deleting Group "'.$race->name.'"');
+                $this->voiceService->destroyGroup($race->group_id);
+            }
+            if ($race->channel_id) {
+                $this->voiceService->destroyVoiceChannel($race->channel_id);
+            }
             $race->delete();
         }
     }

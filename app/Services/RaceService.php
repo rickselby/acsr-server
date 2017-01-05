@@ -102,7 +102,7 @@ class RaceService
 
         // And start the server!
         $this->serverManager->start($server);
-        $this->voiceService->postAnnoucement($race->name.' server is up! <@&'.$race->group_id.'>');
+        $this->voiceService->postAnnoucement('__**'.$race->name.'**__: Server is up <@&'.$race->group_id.'>');
         $race->active = true;
         $race->save();
     }
@@ -187,7 +187,7 @@ class RaceService
     protected function completeRace(Race $race)
     {
         $this->voiceService->postLog('Marking race "'.$race->name.'" complete');
-        $this->voiceService->postAnnoucement($race->name.' complete');
+        $this->voiceService->postAnnoucement('__**'.$race->name.'**__: Complete');
 
         // Mark the race as complete
         $race->active = false;
@@ -208,5 +208,48 @@ class RaceService
     public function getResultsPath(Race $race)
     {
         return storage_path('app/results/'.$race->id.'.json');
+    }
+
+    /**
+     * Post a race grid to the announcements
+     *
+     * @param Race $race
+     */
+    public function postGrid(Race $race)
+    {
+        // Start the message, open a code block
+        $message = '__**'.$race->name.'**__ : <@&'.$race->group_id.'> ```php'."\n";
+
+        // Get the grid keyed by grid slot
+        $grid = $race->entrants()->grid()->get()->keyBy('grid')->all();
+
+        // Work out the longest name to be displayed
+        $nameLength = $race->event->signups->reduce(function($carry, $item) {
+                return max($carry, strlen($item->name));
+            }) + 2;
+
+        // Work out how many people need to be shown for this grid
+        $gridSize = $race->heat ? $race->event->drivers_per_heat : count($grid);
+
+        // Step through the grid in rows
+        for($i = 1; $i <= $gridSize; $i += 2) {
+
+            // Step through each row
+            for ($j = $i; $j <= $i+1; $j++) {
+                $message .= $j.'. ';
+                if (isset($grid[$j])) {
+                    $message .= str_pad($grid[$j]->user->name, $nameLength);
+                } else {
+                    $message .= str_pad('', $nameLength);
+                }
+            }
+
+            $message .= "\n";
+        }
+
+        // Close the code block
+        $message .= '```';
+
+        $this->voiceService->postAnnoucement($message);
     }
 }

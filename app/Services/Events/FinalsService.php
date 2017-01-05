@@ -46,11 +46,12 @@ class FinalsService
     public function initialise(Event $event)
     {
         $this->createFinals($event);
-        $this->setupVoiceGroups($event);
     }
 
     /**
      * Progress from one final to the next
+     *
+     * @param Race $race
      */
     public function progress(Race $race)
     {
@@ -64,9 +65,6 @@ class FinalsService
             // Get the next grid slot of the race being added to
             $nextGrid = $nextRace->entrants->count() + 1;
 
-            // Prepare the announcement
-            $announcement = $nextRace->name.': ';
-
             $users = [];
             for ($i = 0; $i < $race->event->advance_per_final; $i++) {
                 // Create a new entrant for the next race
@@ -78,16 +76,6 @@ class FinalsService
                 // Make a list of the users
                 $users[] = $results[$i]->user;
 
-                // Populate the announcement
-                $announcement .= ' **'.$nextGrid.'.** ';
-                // Everyone should have discord, but...
-                if ($results[$i]->user->getProvider('discord'))
-                {
-                    $announcement .= '<@'.$results[$i]->user->getProvider('discord')->provider_user_id.'> ';
-                } else {
-                    $announcement .= $results[$i]->user->name.' ';
-                }
-
                 // Increment the grid slot
                 $nextGrid++;
             }
@@ -95,8 +83,8 @@ class FinalsService
             // Reload the entrants, just in case
             $nextRace->load(['entrants']);
 
-            // Send an announcement about the new grid slots
-            $this->voiceService->postAnnoucement($announcement);
+            // Re-post the grid for the final, with the new entrants
+            $this->raceService->postGrid($nextRace);
 
             // Add these users to the voice group for the next race
             $this->voiceService->addToGroup($nextRace->group_id, $users);
@@ -169,42 +157,18 @@ class FinalsService
         $event->races()->save($race);
         $event->load(['races']);
 
-        // Prepare the announcement
-        $announcement = $race->name.': ';
-
         // add the entrants, in order
         foreach($entrants AS $key => $user) {
             $entrant = new RaceEntrant();
             $entrant->grid = $key + 1;
             $entrant->user()->associate($user);
             $race->entrants()->save($entrant);
-
-            // Populate the announcement
-            $announcement .= ' **'.($key + 1).'.** ';
-            if ($user->getProvider('discord'))
-            {
-                $announcement .= '<@'.$user->getProvider('discord')->provider_user_id.'> ';
-            } else {
-                $announcement .= $user->name.' ';
-            }
         }
 
-        // Send the announcement about the grid
-        $this->voiceService->postAnnoucement($announcement);
+        $race->load(['entrants']);
+
+        $this->raceService->setupVoiceGroup($race);
+        $this->raceService->postGrid($race);
     }
 
-    /**
-     * Set up all voice groups for the finals
-     *
-     * @param Event $event
-     */
-    protected function setupVoiceGroups(Event $event)
-    {
-        // First, check again who is on the server...
-        $this->userService->updateNames();
-
-        foreach($event->races->where('heat', false) AS $race) {
-            $this->raceService->setupVoiceGroup($race);
-        }
-    }
 }

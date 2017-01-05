@@ -8,7 +8,6 @@ use App\Services\Events\FinalsService;
 use App\Services\Events\HeatsService;
 use App\Services\Events\PreparationService;
 use App\Services\Events\StandingsService;
-use \Illuminate\Http\Request;
 use App\Models\Event;
 use App\Services\Events\DashboardService;
 
@@ -73,6 +72,13 @@ class EventDashboardController extends Controller
         return \Redirect::route('admin.event.dashboard', $event);
     }
 
+    public function startFinals(Event $event)
+    {
+        $this->finalsService->initialise($event);
+        $this->dashboardService->startNextSession($event);
+        return \Redirect::route('admin.event.dashboard', $event);
+    }
+
     public function runNextSession(Event $event)
     {
         $this->dashboardService->startNextSession($event);
@@ -85,11 +91,5 @@ class EventDashboardController extends Controller
         return \Redirect::route('admin.event.dashboard', $event);
     }
 
-    public function startFinals(Event $event)
-    {
-        $this->finalsService->initialise($event);
-        $this->dashboardService->startNextSession($event);
-        return \Redirect::route('admin.event.dashboard', $event);
-    }
 
 }
