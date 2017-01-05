@@ -75,15 +75,18 @@ class DiscordVoiceServer implements VoiceServerContract
         // Get the channel
         $channel = $this->discord->createVoiceChannel($this->guild, $name);
 
+        // Allow the bot to access the channel
+        $this->discord->assignMemberToChannel($channel->id, $this->discord->getBotID());
+
         // Deny @everyone access to the channel
-        $this->discord->denyRoleFromVoiceChannel(
+        $this->discord->denyRoleFromChannel(
             $channel->id,
             $this->discord->getEveryoneRoleID($this->guild)
         );
 
         // Allow the given groups access to the channel
         foreach($groupIDs AS $groupID) {
-            $this->discord->assignRoleToVoiceChannel($channel->id, $groupID);
+            $this->discord->assignRoleToChannel($channel->id, $groupID);
         }
 
         return $channel->id;

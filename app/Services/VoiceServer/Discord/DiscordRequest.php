@@ -87,20 +87,26 @@ class DiscordRequest
      */
     private function checkForErrors(Response $response)
     {
-        switch($response->code) {
-            case '400':
-                throw new \Exception('Discord: Bad Request');
-            case '401':
-                throw new \Exception('Discord: Unauthorized');
-            case '403':
-                throw new \Exception('Discord: Permission Denied');
-            case '404':
-                throw new \Exception('Discord: 404 Not Found');
-            case '405':
-                throw new \Exception('Discord: Method Not Allowed');
-            case '429':
-                throw new \Exception('Discord: Too Many Requests');
-            default:
+        try {
+            switch ($response->code) {
+                case '400':
+                    throw new \Exception('Discord: Bad Request');
+                case '401':
+                    throw new \Exception('Discord: Unauthorized');
+                case '403':
+                    throw new \Exception('Discord: Permission Denied');
+                case '404':
+                    throw new \Exception('Discord: 404 Not Found');
+                case '405':
+                    throw new \Exception('Discord: Method Not Allowed');
+                case '429':
+                    throw new \Exception('Discord: Too Many Requests');
+                default:
+            }
+        } catch (\Exception $e) {
+            // Catch it to log it, then throw it again
+            $this->log->info($e->getMessage());
+            throw $e;
         }
 
         return $response;

@@ -54,6 +54,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
     Route::post('event/{event}/dashboard/grids', 'EventDashboardController@grids')->name('event.dashboard.grids');
     Route::post('event/{event}/dashboard/start-heats', 'EventDashboardController@startHeats')->name('event.dashboard.start-heats');
     Route::post('event/{event}/dashboard/run-next-session', 'EventDashboardController@runNextSession')->name('event.dashboard.run-next-session');
+    Route::post('event/{event}/dashboard/progress-event', 'EventDashboardController@progressEvent')->name('event.dashboard.progress-event');
     Route::post('event/{event}/dashboard/start-finals', 'EventDashboardController@startFinals')->name('event.dashboard.start-finals');
 });
 

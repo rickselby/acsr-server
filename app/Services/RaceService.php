@@ -102,7 +102,7 @@ class RaceService
 
         // And start the server!
         $this->serverManager->start($server);
-        $this->voiceService->postAnnoucement('<@&'.$race->group_id.'> server is up!');
+        $this->voiceService->postAnnoucement($race->name.' server is up! <@&'.$race->group_id.'>');
         $race->active = true;
         $race->save();
     }
@@ -187,6 +187,7 @@ class RaceService
     protected function completeRace(Race $race)
     {
         $this->voiceService->postLog('Marking race "'.$race->name.'" complete');
+        $this->voiceService->postAnnoucement($race->name.' complete');
 
         // Mark the race as complete
         $race->active = false;

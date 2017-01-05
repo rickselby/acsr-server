@@ -84,6 +84,21 @@ class DashboardService
     }
 
     /**
+     * Try to progress an event
+     *
+     * @param Event $event
+     */
+    public function progressEvent(Event $event)
+    {
+        $this->progress(
+            // Get the last complete race, and try to progress from there
+            $event->races
+                ->where('complete', true)
+                ->last()
+        );
+    }
+
+    /**
      * Check if we can start the finals for the given event
      *
      * @param Event $event
