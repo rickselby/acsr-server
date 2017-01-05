@@ -62,7 +62,7 @@ class BasicConfigFile implements ConfigFileContract
 
             $entryList[] = '[CAR_'.($i-1).']';
             $entryList[] = 'MODEL='.$carModel;
-            $entryList[] = 'SKIN='.($driver ? $driver->skin : '');
+            $entryList[] = 'SKIN='.($driver ? $driver->user->skin : '');
             $entryList[] = 'SPECTATOR_MODE=0';
             $entryList[] = 'DRIVERNAME='.($driver ? $driver->user->name : 'blank');
             $entryList[] = 'TEAM=';
