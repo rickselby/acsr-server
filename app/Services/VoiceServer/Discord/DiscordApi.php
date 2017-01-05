@@ -40,7 +40,7 @@ class DiscordApi
     /**
      * Create a new role
      *
-     * @param $guildID
+     * @param string $guildID
      * @param string|null $name
      * @param int|null $permissions
      * @param int|null $position
@@ -82,10 +82,12 @@ class DiscordApi
 
     /**
      * Get the list of roles
-     * @param $guildID
+     *
+     * @param string $guildID
+     *
      * @return array|object|string
      */
-    public function getRoles($guildID)
+    private function getRoles($guildID)
     {
         return $this->discordRequest->send(
             Request::get(self::BASE_URL.'/guilds/'.$guildID.'/roles'),
@@ -96,12 +98,12 @@ class DiscordApi
     /**
      * Update the role positions to match their place in the given array
      *
-     * @param int $guildID
-     * @param int[] $orderedPositions Array of Role IDs in REVERSE order (@everyone at the top)
+     * @param string $guildID
+     * @param string[] $orderedPositions Array of Role IDs in REVERSE order (@everyone at the top)
      *
      * @return Response
      */
-    public function updateRolePositions($guildID, $orderedPositions)
+    private function updateRolePositions($guildID, $orderedPositions)
     {
         $rolePositions = [];
         $pos = 0;
@@ -124,8 +126,8 @@ class DiscordApi
     /**
      * Update an existing role
      *
-     * @param int $guildID
-     * @param int $roleID
+     * @param string $guildID
+     * @param string $roleID
      * @param string|null $name
      * @param int|null $permissions
      * @param int|null $position
@@ -155,8 +157,8 @@ class DiscordApi
     /**
      * Delete a role
      *
-     * @param int $guildID
-     * @param int $roleID
+     * @param string $guildID
+     * @param string $roleID
      *
      * @return object
      */
@@ -169,31 +171,14 @@ class DiscordApi
     }
 
     /**
-     * Get details for a user
-     *
-     * @param int $guildID
-     * @param int $userID
-     *
-     * @return object
-     */
-    public function getMember($guildID, $userID)
-    {
-        return $this->discordRequest->send(
-            Request::get(self::BASE_URL.'/guilds/'.$guildID.'/members/'.$userID),
-            'GET/guilds/'.$guildID.'/members'
-        )->body;
-    }
-
-    /**
      * Add a user to a role
      *
-     * @param int $guildID
-     * @param int $userID
-     * @param int $roleID
+     * @param string $guildID
+     * @param string $userID
+     * @param string $roleID
      */
     public function addMemberToRole($guildID, $userID, $roleID)
     {
-        // PUT/DELETE /guilds/<guild_id>/members/<user_id>/roles/<role_id>
         $this->discordRequest->send(
             Request::put(self::BASE_URL.'/guilds/'.$guildID.'/members/'.$userID.'/roles/'.$roleID),
             'UPDATE/guilds/'.$guildID.'/members'
@@ -203,11 +188,26 @@ class DiscordApi
     /**
      * Get the role ID for the @everyone group
      *
-     * @param int $guildID
+     * @param string $guildID
      *
-     * @return int|null
+     * @return string|null
      */
     public function getEveryoneRoleID($guildID)
+    {
+        return \Cache::remember('discord-everyone-role-id', 1, function() use ($guildID) {
+            return $this->getRoleIDByName($guildID, '@everyone');
+        });
+    }
+
+    /**
+     * Look up a role ID by name
+     *
+     * @param $guildID
+     * @param $name
+     *
+     * @return string|null
+     */
+    public function getRoleIDByName($guildID, $name)
     {
         $roles = $this->discordRequest->send(
             Request::get(self::BASE_URL.'/guilds/'.$guildID.'/roles'),
@@ -215,7 +215,7 @@ class DiscordApi
         );
 
         foreach($roles->body AS $role) {
-            if ($role->name == '@everyone') {
+            if ($role->name == $name) {
                 return $role->id;
             }
         }
@@ -226,31 +226,33 @@ class DiscordApi
     /**
      * Find a channel by name
      *
-     * @param int $guildID
+     * @param string $guildID
      * @param string $name
      *
      * @return int|null
      */
     public function findChannel($guildID, $name)
     {
-        $channels = $this->discordRequest->send(
-            Request::get(self::BASE_URL.'/guilds/'.$guildID.'/channels'),
-            'GET/guilds/'.$guildID.'/channels'
-        );
+        return \Cache::remember('discord-channel-id-'.$name, 1, function() use ($guildID, $name) {
+            $channels = $this->discordRequest->send(
+                Request::get(self::BASE_URL . '/guilds/' . $guildID . '/channels'),
+                'GET/guilds/' . $guildID . '/channels'
+            );
 
-        foreach($channels->body AS $channel) {
-            if ($channel->name == strtolower($name)) {
-                return $channel->id;
+            foreach ($channels->body AS $channel) {
+                if ($channel->name == strtolower($name)) {
+                    return $channel->id;
+                }
             }
-        }
 
-        return null;
+            return null;
+        });
     }
 
     /**
      * Create a new voice channel
      *
-     * @param int $guildID
+     * @param string $guildID
      * @param string $name
      *
      * @return object
@@ -263,7 +265,7 @@ class DiscordApi
     /**
      * Create a new text channel
      *
-     * @param int $guildID
+     * @param string $guildID
      * @param string $name
      *
      * @return object
@@ -274,56 +276,9 @@ class DiscordApi
     }
 
     /**
-     * Assign a role to a voice channel
-     *
-     * @param $channelID
-     * @param $roleID
-     */
-    public function assignRoleToVoiceChannel($channelID, $roleID)
-    {
-        $this->updateRoleVoiceChannel($channelID, $roleID, [
-            'type' => 'role',
-            'allow' => DiscordPermissions::CONNECT,
-            'deny' => 0,
-        ]);
-    }
-
-    /**
-     * Deny a role access to a voice channel
-     *
-     * @param $channelID
-     * @param $roleID
-     */
-    public function denyRoleFromVoiceChannel($channelID, $roleID)
-    {
-        $this->updateRoleVoiceChannel($channelID, $roleID, [
-            'type' => 'role',
-            'deny' => DiscordPermissions::CONNECT,
-            'allow' => 0,
-        ]);
-    }
-
-    /**
-     * Update permissions for a role on a voice channel
-     *
-     * @param $channelID
-     * @param $roleID
-     * @param $body
-     */
-    private function updateRoleVoiceChannel($channelID, $roleID, $body)
-    {
-        $this->discordRequest->send(
-            Request::put(self::BASE_URL.'/channels/'.$channelID.'/permissions/'.$roleID)
-                ->sendsType(Mime::JSON)
-                ->body(json_encode($body)),
-            'UPDATE/channels/'.$channelID.'/permissions'
-        );
-    }
-
-    /**
      * Create a new channel
      *
-     * @param int $guildID
+     * @param string $guildID
      * @param string $name
      * @param string $type
      *
@@ -343,9 +298,86 @@ class DiscordApi
     }
 
     /**
+     * Assign a role to a voice channel
+     *
+     * @param string $channelID
+     * @param string $roleID
+     */
+    public function assignRoleToChannel($channelID, $roleID)
+    {
+        $this->updateChannelPermissions($channelID, $roleID, [
+            'type' => 'role',
+            'allow' => DiscordPermissions::CONNECT,
+            'deny' => 0,
+        ]);
+    }
+
+    /**
+     * Assign a member to a voice channel
+     *
+     * @param string $channelID
+     * @param string $memberID
+     */
+    public function assignMemberToChannel($channelID, $memberID)
+    {
+        $this->updateChannelPermissions($channelID, $memberID, [
+            'type' => 'member',
+            'allow' => DiscordPermissions::CONNECT,
+            'deny' => 0,
+        ]);
+    }
+
+    /**
+     * Deny a role access to a voice channel
+     *
+     * @param string $channelID
+     * @param string $roleID
+     */
+    public function denyRoleFromChannel($channelID, $roleID)
+    {
+        $this->updateChannelPermissions($channelID, $roleID, [
+            'type' => 'role',
+            'deny' => DiscordPermissions::CONNECT,
+            'allow' => 0,
+        ]);
+    }
+
+    /**
+     * Assign a member to a voice channel
+     *
+     * @param string $channelID
+     * @param string $memberID
+     */
+    public function denyMemberFromChannel($channelID, $memberID)
+    {
+        $this->updateChannelPermissions($channelID, $memberID, [
+            'type' => 'member',
+            'deny' => DiscordPermissions::CONNECT,
+            'allow' => 0,
+        ]);
+    }
+
+    /**
+     * Update permissions for a role on a voice channel
+     *
+     * @param string $channelID
+     * @param string $overwriteID Role ID or User ID
+     * @param array $body
+     */
+    private function updateChannelPermissions($channelID, $overwriteID, $body)
+    {
+        $this->discordRequest->send(
+            Request::put(self::BASE_URL.'/channels/'.$channelID.'/permissions/'.$overwriteID)
+                ->sendsType(Mime::JSON)
+                ->body(json_encode($body)),
+            'UPDATE/channels/'.$channelID.'/permissions'
+        );
+    }
+
+    /**
      * Delete a channel
      *
-     * @param $channelID
+     * @param string $channelID
      *
      * @return object
      */
@@ -360,7 +392,7 @@ class DiscordApi
     /**
      * Send a message to a channel
      *
-     * @param int $channelID
+     * @param string $channelID
      * @param string $message
      *
      * @return object
@@ -380,7 +412,7 @@ class DiscordApi
     /**
      * Get the list of members of the given guild
      *
-     * @param int $guildID
+     * @param string $guildID
      *
      * @return []
      */
@@ -409,5 +441,21 @@ class DiscordApi
         }
 
         return $options;
+    }
+
+    /**
+     * Get the member ID of the bot
+     *
+     * @return string
+     */
+    public function getBotID()
+    {
+        // Cache the bot ID for a minute once we know it
+        return \Cache::remember('discord-bot-id', 1, function() {
+            return $this->discordRequest->send(
+                Request::get(self::BASE_URL . '/users/@me'),
+                'GET/users/'
+            )->body->id;
+        });
     }
 }
