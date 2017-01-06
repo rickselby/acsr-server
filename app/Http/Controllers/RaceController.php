@@ -36,7 +36,6 @@ class RaceController extends Controller
      */
     public function json(Race $race, RaceService $raceService)
     {
-        $this->authorize('manage', $race->event);
         return \Response::file($raceService->getResultsPath($race));
     }
 }
