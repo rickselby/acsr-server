@@ -59,17 +59,16 @@ class Auth
     {
         $userProvider = $this->userProviderStore->getByProvider($provider, $providerUser->id);
         if ($userProvider) {
-            \Auth::login($userProvider->user);
+            $user = $userProvider->user;
         } else {
             // Create the new user
             $user = $this->userService->create();
 
             // Attach the current provider to the user
             $this->attachProvider($user, $provider, $providerUser);
-
-            // Log the user in
-            \Auth::login($user);
         }
+        // Log the user in, remember them
+        \Auth::login($user, true);
     }
 
     /**
