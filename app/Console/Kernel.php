@@ -32,7 +32,7 @@ class Kernel extends ConsoleKernel
         // Try to create servers for events every half hour
         $schedule->call(function(EventService $eventService) {
             $eventService->createServers();
-        });
+        })->everyThirtyMinutes();
     }
 
     /**
