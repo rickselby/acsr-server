@@ -20,7 +20,8 @@
         "nubs/random-name-generator": "^2.1",
         "spatie/laravel-permission": "^1.5",
         "camroncade/timezone": "^0.1.0",
-        "predis/predis": "^1.1"
+        "predis/predis": "^1.1",
+        "doctrine/dbal": "^2.5"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
