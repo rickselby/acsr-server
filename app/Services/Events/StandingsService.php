@@ -61,35 +61,49 @@ class StandingsService
      */
     protected function sortStandings($a, $b)
     {
-        // First, sort by points, if they're different
+        /**
+         * First, sort by points, if they're different
+         */
         if ($a['points'] != $b['points']) {
             return $b['points'] - $a['points'];
         }
 
-        // Then, best finishing positions; all the way down...
+        /**
+         * Then, best finishing positions; all the way down...
+         */
+
+        // First, get the positions collections sorted
         $positions = [
-            'a' => $a['positions']->sort()->all(),
-            'b' => $b['positions']->sort()->all(),
+            'a' => $a['positions']->sort(),
+            'b' => $b['positions']->sort(),
         ];
 
-        for($i = 0; $i < max(count($positions['a']), count($positions['b'])); $i++) {
-            // Check both have a position set
-            if (isset($positions['a'][$i]) && isset($positions['b'][$i])) {
+        for($i = 0; $i < max($positions['a']->count(), $positions['b']->count()); $i++) {
+
+            // Get the next best position for each driver (null if empty)
+            $val['a'] = $positions['a']->shift();
+            $val['b'] = $positions['b']->shift();
+
+            // Check both positions are not null
+            if ($val['a'] && $val['b']) {
                 // If they're different, compare them
                 // If not, loop again
-                if ($positions['a'][$i] != $positions['b'][$i]) {
-                    return $positions['a'][$i] - $positions['b'][$i];
+                if ($val['a'] != $val['b']) {
+                    return $val['a'] - $val['b'];
                 }
-            } elseif (isset($positions['a'][$i])) {
-                // $a has less results; $b takes priority
+            } elseif ($val['a']) {
+                // $a has more results; $b takes priority (same points, less races)
                 return -1;
-            } elseif (isset($positions['b'][$i])) {
-                // $b has less results; $a takes priority
+            } elseif ($val['b']) {
+                // $b has more results; $a takes priority (same points, less races)
                 return 1;
             }
         }
 
-        // Otherwise, it's the fastest lap; this could return zero if drivers cannot be split
+        /**
+         * If we're here, points and finishing positions are identical
+         * So we compare their fastest laps
+         */
         return $a['fastestLap'] - $b['fastestLap'];
     }
 
