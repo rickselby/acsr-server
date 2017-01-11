@@ -34,6 +34,11 @@ class GenerateGrids
         // Assign each driver an even number of each side of the grid
         $races = $this->assignSides->assign($raceSlots);
 
+        // Resort the races by session
+        usort($races, function($a, $b) {
+            return $a['session'] - $b['session'];
+        });
+
         // Randomly assign drivers to the numbers used in the grids
         return $this->assignDrivers($drivers, $races);
     }
