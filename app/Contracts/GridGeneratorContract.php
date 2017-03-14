@@ -5,7 +5,7 @@ namespace App\Contracts;
 /**
  * Contract for generating the grids for the heats
  */
-interface GridsContract
+interface GridGeneratorContract
 {
     /**
      * Set the options for generating grids

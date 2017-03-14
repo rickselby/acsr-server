@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Contracts\GridsContract;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EventRequest;
 use App\Models\Event;
@@ -42,15 +41,13 @@ class EventController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @param  GridsContract $gridsService
      * @param  PointsSequenceService $pointsSequenceService
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(GridsContract $gridsService, PointsSequenceService $pointsSequenceService)
+    public function create(PointsSequenceService $pointsSequenceService)
     {
         return view('admin.event.create')
-            ->with('validation', $gridsService->validDescription())
             ->with('pointsSequenceSelect', $pointsSequenceService->forSelect());
     }
 
@@ -86,16 +83,14 @@ class EventController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param  Event $event
-     * @param  GridsContract $gridsService
      * @param  PointsSequenceService $pointsSequenceService
      *
      * @return \Illuminate\Http\Response
      */
-    public function edit(Event $event, GridsContract $gridsService, PointsSequenceService $pointsSequenceService)
+    public function edit(Event $event, PointsSequenceService $pointsSequenceService)
     {
         return view('admin.event.edit')
             ->with('event', $event)
-            ->with('validation', $gridsService->validDescription())
             ->with('pointsSequenceSelect', $pointsSequenceService->forSelect());
     }
 

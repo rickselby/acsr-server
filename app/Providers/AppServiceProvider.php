@@ -18,10 +18,6 @@ class AppServiceProvider extends ServiceProvider
             \App\Services\ConfigFile\BasicConfigFile::class
         );
         $this->app->bind(
-            \App\Contracts\GridsContract::class,
-            \App\Services\Grids\LeftRightGrids::class
-        );
-        $this->app->bind(
             \App\Contracts\ServerManagerContract::class,
             \App\Services\ServerManager\ClientServerManager::class
         );

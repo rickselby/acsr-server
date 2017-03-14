@@ -2,7 +2,7 @@
 
 namespace App\Services\Grids;
 
-use App\Contracts\GridsContract;
+use App\Contracts\GridGeneratorContract;
 use App\Services\Grids\LeftRightGrids\GenerateGrids;
 
 /*
@@ -15,7 +15,7 @@ use App\Services\Grids\LeftRightGrids\GenerateGrids;
  *
  * Each driver will start half their heats from one side of the grid, and half from the other.
  */
-class LeftRightGrids implements GridsContract
+class LeftRightGrids implements GridGeneratorContract
 {
     /** @var  int */
     protected $driversPerHeat;

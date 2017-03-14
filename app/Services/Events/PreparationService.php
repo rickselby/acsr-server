@@ -2,13 +2,13 @@
 
 namespace App\Services\Events;
 
-use App\Contracts\GridsContract;
 use App\Contracts\ServerProviderContract;
 use App\Contracts\VoiceServerContract;
 use App\Models\Event;
 use App\Models\Race;
 use App\Models\RaceEntrant;
 use App\Models\User;
+use App\Services\GridService;
 use App\Services\RaceService;
 use App\Services\UserService;
 
@@ -16,7 +16,7 @@ class PreparationService
 {
     /** @var ServerProviderContract */
     protected $serverProviderService;
-    /** @var GridsContract */
+    /** @var GridService */
     protected $gridsService;
     /** @var VoiceServerContract */
     protected $voiceService;
@@ -25,7 +25,7 @@ class PreparationService
     /** @var UserService */
     protected $userService;
 
-    public function __construct(ServerProviderContract $serverProviderService, GridsContract $gridsService, VoiceServerContract $voiceServerContract, RaceService $raceService, UserService $userService)
+    public function __construct(ServerProviderContract $serverProviderService, GridService $gridsService, VoiceServerContract $voiceServerContract, RaceService $raceService, UserService $userService)
     {
         $this->serverProviderService = $serverProviderService;
         $this->gridsService = $gridsService;
@@ -132,10 +132,7 @@ class PreparationService
      */
     protected function setupGridsService(Event $event)
     {
-        $this->gridsService->setOptions(
-            $event->drivers_per_heat,
-            $event->heats_per_driver
-        );
+        $this->gridsService->setEvent($event);
     }
 
     /**

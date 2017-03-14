@@ -57,15 +57,6 @@
 
 <h2 class="col-sm-offset-2">Heats</h2>
 
-<div class="panel panel-info col-sm-offset-2">
-    <div class="panel-heading">
-        Validation Information
-    </div>
-    <div class="panel-body">
-        {{ $validation }}
-    </div>
-</div>
-
 <div class="form-group">
     {!! Form::label('heats_per_driver', 'Heats per driver', ['class' => 'col-sm-2 control-label']) !!}
     <div class="col-sm-10">
