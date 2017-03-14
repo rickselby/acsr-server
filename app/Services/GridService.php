@@ -34,39 +34,10 @@ class GridService
     {
         // Save the event
         $this->event = $event;
-
-        // Set up the generator
-        $generator = $this->getGridGenerator();
-        $generator->setOptions(
-            $event->drivers_per_heat,
-            $event->heats_per_driver
-        );
-    }
-
-    /**
-     * Check the options given to the class can be handled
-     *
-     * @return boolean
-     */
-    public function isValid()
-    {
-        return $this->getGridGenerator()->isValid();
-    }
-
-    /**
-     * Get a description of how to make the options valid
-     *
-     * @return string
-     */
-    public function validDescription()
-    {
-        return $this->getGridGenerator()->validDescription();
     }
 
     /**
      * Get a count of how many servers are needed for the given number of drivers
-     *
-     * @param int $driverCount
      *
      * @return int
      */

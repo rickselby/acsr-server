@@ -35,19 +35,6 @@ class PreparationService
     }
 
     /**
-     * Check if the given event is valid
-     *
-     * @param Event $event
-     *
-     * @return bool
-     */
-    public function isValid(Event $event)
-    {
-        $this->setupGridsService($event);
-        return $this->gridsService->isValid();
-    }
-
-    /**
      * Get the maximum slots available for an event
      *
      * @param Event $event
@@ -74,15 +61,10 @@ class PreparationService
     {
         $this->setupGridsService($event);
         // Get the signup
-        if ($this->gridsService->isValid()) {
+        $serverCount = $this->gridsService->serversNeeded();
 
-            $signupCount = $event->signups->count();
-
-            $serverCount = $this->gridsService->serversNeeded($signupCount);
-
-            for ($i = 0; $i < $serverCount; $i++) {
-                $this->serverProviderService->create($event);
-            }
+        for ($i = 0; $i < $serverCount; $i++) {
+            $this->serverProviderService->create($event);
         }
     }
 

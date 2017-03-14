@@ -75,8 +75,7 @@ class EventController extends Controller
     public function show(Event $event, PreparationService $preparationService)
     {
         return view('admin.event.show')
-            ->with('event', $event)
-            ->with('valid', $preparationService->isValid($event));
+            ->with('event', $event);
     }
 
     /**

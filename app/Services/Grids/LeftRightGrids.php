@@ -18,10 +18,10 @@ use App\Services\Grids\LeftRightGrids\GenerateGrids;
 class LeftRightGrids implements GridGeneratorContract
 {
     /** @var  int */
-    protected $driversPerHeat;
+    private $driversPerHeat = 8;
 
     /** @var  int */
-    protected $heatsPerDriver;
+    private $heatsPerDriver = 4;
 
     /** @var GenerateGrids */
     protected $generateGrids;
@@ -29,35 +29,6 @@ class LeftRightGrids implements GridGeneratorContract
     public function __construct(GenerateGrids $generateGrids)
     {
         $this->generateGrids = $generateGrids;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setOptions(int $driversPerHeat, int $heatsPerDriver)
-    {
-        $this->driversPerHeat = $driversPerHeat;
-        $this->heatsPerDriver = $heatsPerDriver;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function isValid()
-    {
-        return
-            // the number of drivers per heat should be double the number of heats per driver
-            ($this->driversPerHeat / $this->heatsPerDriver == 2)
-            // the number of heats per driver should be even
-            && ($this->heatsPerDriver % 2 == 0);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function validDescription()
-    {
-        return 'Heat grid size should be double the number of heats per driver; and heats per driver should be even';
     }
 
     /**

@@ -23,8 +23,6 @@ class EventRequest extends Request
         return [
             'name' => 'required|string',
             'start' => 'required|date_format:"'.$this->dateFormat.'"',
-            'drivers_per_heat' => 'required|integer',
-            'heats_per_driver' => 'required|integer',
             'drivers_per_final' => 'required|integer',
             'advance_per_final' => 'required|integer',
             'laps_per_heat' => 'required|integer',

@@ -7,8 +7,6 @@ use Collective\Html\Eloquent\FormAccessible;
  * @property $id
  * @property $name
  * @property $start
- * @property $drivers_per_heat
- * @property $heats_per_driver
  * @property $drivers_per_final
  * @property $advance_per_final
  * @property $laps_per_heat
@@ -43,8 +41,6 @@ class Event extends \Eloquent
     protected $fillable = [
         'name',
         'start',
-        'drivers_per_heat',
-        'heats_per_driver',
         'drivers_per_final',
         'advance_per_final',
         'laps_per_heat',

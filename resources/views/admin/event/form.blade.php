@@ -58,23 +58,6 @@
 <h2 class="col-sm-offset-2">Heats</h2>
 
 <div class="form-group">
-    {!! Form::label('heats_per_driver', 'Heats per driver', ['class' => 'col-sm-2 control-label']) !!}
-    <div class="col-sm-10">
-        {!! Form::number('heats_per_driver', null, ['class' => 'form-control']) !!}
-        <p class="help-block">
-            Number of heats each driver will participate in
-        </p>
-    </div>
-</div>
-
-<div class="form-group">
-    {!! Form::label('drivers_per_heat', 'Grid size', ['class' => 'col-sm-2 control-label']) !!}
-    <div class="col-sm-10">
-        {!! Form::number('drivers_per_heat', null, ['class' => 'form-control']) !!}
-    </div>
-</div>
-
-<div class="form-group">
     {!! Form::label('laps_per_heat', 'Laps', ['class' => 'col-sm-2 control-label']) !!}
     <div class="col-sm-10">
         {!! Form::number('laps_per_heat', null, ['class' => 'form-control']) !!}

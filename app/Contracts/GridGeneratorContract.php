@@ -8,33 +8,6 @@ namespace App\Contracts;
 interface GridGeneratorContract
 {
     /**
-     * Set the options for generating grids
-     *
-     * @param int $driversPerHeat
-     * @param int $heatsPerDriver
-     *
-     * @return bool
-     */
-    public function setOptions(
-        int $driversPerHeat,
-        int $heatsPerDriver
-    );
-
-    /**
-     * Check the options given to the class can be handled
-     * 
-     * @return boolean
-     */
-    public function isValid();
-
-    /**
-     * Get a description of how to make the options valid
-     *
-     * @return string
-     */
-    public function validDescription();
-
-    /**
      * Get a count of how many servers are needed for the given number of drivers
      * @param int $driverCount
      * @return int

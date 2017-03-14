@@ -10,19 +10,10 @@
 
 @section('content')
 
-    @if (!$valid)
-        <div class="alert alert-danger">
-            <strong>Warning!</strong> The options you have selected for this event are invalid - we cannot generate grids
-            for these options. Please mange changes to the options:
-            <a class="btn btn-small btn-primary"
-               href="{{ route('admin.event.edit', $event) }}">Edit Event</a>
-        </div>
-    @else
-        <p>
-            <a class="btn btn-small btn-warning"
-               href="{{ route('admin.event.edit', $event) }}">Edit Event</a>
-        </p>
-    @endif
+    <p>
+        <a class="btn btn-small btn-warning"
+           href="{{ route('admin.event.edit', $event) }}">Edit Event</a>
+    </p>
 
     <div class="panel {{ $event->config ? 'panel-success' : 'panel-danger' }}">
         <div class="panel-heading">
